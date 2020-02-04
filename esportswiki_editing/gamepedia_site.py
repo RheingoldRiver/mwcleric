@@ -25,5 +25,5 @@ class GamepediaSite(ExtendedSite, CargoSite):
     def report_all_errors(self, error_title):
         error_page = self.pages['Log:' + error_title]
         errors = [_.format_for_print() for _ in self.errors]
-        error_text = '<br>'.join(errors)
-        error_page.append(error_text)
+        error_text = '<br>\n'.join(errors)
+        error_page.append('\n' + error_text)
