@@ -29,3 +29,6 @@ class GamepediaSite(ExtendedSite, CargoSite):
         errors = [_.format_for_print() for _ in self.errors]
         error_text = '<br>\n'.join(errors)
         error_page.append('\n' + error_text)
+
+        # reset the list so we can reuse later if needed
+        self.errors = []
