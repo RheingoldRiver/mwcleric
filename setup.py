@@ -14,5 +14,5 @@ setuptools.setup(
     url="https://github.com/RheingoldRiver/esportswiki_editing",
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=['mwclient', 'mwparserfromhell']
+    install_requires=['mwclient', 'mwparserfromhell', 'datetime']
 )
