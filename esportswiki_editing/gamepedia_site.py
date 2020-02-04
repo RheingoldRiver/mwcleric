@@ -16,13 +16,15 @@ class GamepediaSite(ExtendedSite, CargoSite):
 
         self.errors = []
 
-    def error_script(self, title: str, e: Exception):
+    def error_script(self, title: str = None, e: Exception = None):
         self.errors.append(WikiScriptError(title, e))
 
-    def error_content(self, title: str, error: str = None):
-        self.errors.append(WikiContentError(title, error=error))
+    def error_content(self, title: str = None, text: str = None):
+        self.errors.append(WikiContentError(title, error=text))
 
     def report_all_errors(self, error_title):
+        if not self.errors:
+            return
         error_page = self.pages['Log:' + error_title]
         errors = [_.format_for_print() for _ in self.errors]
         error_text = '<br>\n'.join(errors)
