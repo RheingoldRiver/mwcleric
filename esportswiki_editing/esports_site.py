@@ -1,4 +1,4 @@
-from gamepedia_site import GamepediaSite
+from .gamepedia_site import GamepediaSite
 
 
 class EsportsSite(GamepediaSite):

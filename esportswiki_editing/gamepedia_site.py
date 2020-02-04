@@ -1,6 +1,6 @@
-from extended_site import ExtendedSite
-from cargo_site import CargoSite
-from wiki_error import WikiError
+from .extended_site import ExtendedSite
+from .cargo_site import CargoSite
+from .wiki_error import WikiError
 
 
 class GamepediaSite(ExtendedSite, CargoSite):
