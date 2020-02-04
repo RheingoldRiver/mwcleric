@@ -1,11 +1,20 @@
-from mwclient.page import Page
+import datetime, pytz
 
 
 class WikiError(object):
-    def __init__(self, page: Page, e: Exception):
-        self.title = page.name
-        self.error = e
+
+    error_type = None
+    title = None
+    error = None
+
+    def __init__(self):
+        self.timestamp = datetime.datetime.now(tz=pytz.timezone('America/Los_Angeles'))
+        self.date = self.timestamp.strftime('%Y-%m-%d')
 
     def format_for_print(self):
-        self.error:Exception
-        return '{}: {} - {}'.format(type(self.error), self.title, self.error)
+        return '{} - {}: [[{}]] - {}'.format(
+            self.date,
+            self.error_type,
+            self.title,
+            self.error
+        )
