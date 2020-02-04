@@ -12,9 +12,9 @@ class WikiError(object):
         self.date = self.timestamp.strftime('%Y-%m-%d')
 
     def format_for_print(self):
-        return '{} - {}: [[{}]] - {}'.format(
+        return '{} - {}: {} - {}'.format(
             self.date,
             self.error_type,
-            self.title,
+            '[[{}]]'.format(self.title) if self.title else '(No title recorded)',
             self.error
         )
