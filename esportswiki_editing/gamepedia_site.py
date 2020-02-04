@@ -2,7 +2,6 @@ from .extended_site import ExtendedSite
 from .cargo_site import CargoSite
 from .wiki_script_error import WikiScriptError
 from .wiki_content_error import WikiContentError
-from mwclient.page import Page
 
 
 class GamepediaSite(ExtendedSite, CargoSite):
@@ -17,11 +16,11 @@ class GamepediaSite(ExtendedSite, CargoSite):
 
         self.errors = []
 
-    def record_script_error(self, page: Page, e: Exception):
-        self.errors.append(WikiScriptError(page, e))
+    def record_script_error(self, title: str, e: Exception):
+        self.errors.append(WikiScriptError(title, e))
 
-    def record_content_error(self, page: Page, e: str):
-        self.errors.append(WikiContentError(page, e))
+    def record_content_error(self, title: str, e: str):
+        self.errors.append(WikiContentError(title, e))
 
     def report_all_errors(self, error_title):
         error_page = self.pages['Log:' + error_title]

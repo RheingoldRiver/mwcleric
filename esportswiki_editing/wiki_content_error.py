@@ -1,12 +1,11 @@
 from .wiki_error import WikiError
-from mwclient.page import Page
 
 
 class WikiContentError(WikiError):
     """Exceptions that we note based on the content of the wiki
     """
-    def __init__(self, page: Page, e: str):
+    def __init__(self, title: str, e: str):
         super().__init__()
-        self.title = page.name
+        self.title = title
         self.error = e
         self.error_type = 'Wiki Content Error'
