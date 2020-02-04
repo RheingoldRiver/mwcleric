@@ -2,3 +2,4 @@
 !*.py
 !.gitignore
 !/esportswiki_editing/
+!README.md
