@@ -19,8 +19,8 @@ class GamepediaSite(ExtendedSite, CargoSite):
     def record_script_error(self, title: str, e: Exception):
         self.errors.append(WikiScriptError(title, e))
 
-    def record_content_error(self, title: str, e: str):
-        self.errors.append(WikiContentError(title, e))
+    def record_content_error(self, title: str, error: str = None):
+        self.errors.append(WikiContentError(title, error=error))
 
     def report_all_errors(self, error_title):
         error_page = self.pages['Log:' + error_title]
