@@ -5,13 +5,14 @@ from .wiki_content_error import WikiContentError
 
 
 class GamepediaSite(ExtendedSite, CargoSite):
-    def __init__(self, user, wiki, stg=False):
+    def __init__(self, user, wiki, stg=False, username=None, pwd=None):
         suffix = 'io' if stg else 'com'
         super().__init__('%s.gamepedia.' % wiki + suffix, path='/')
-        pwd_file = 'password2.txt' if user == 'bot' else 'password.txt'
-        user_file = 'username2.txt' if user == 'bot' else 'username.txt'
-        pwd = open(pwd_file).read().strip()
-        username = open(user_file).read().strip()
+        if username is None or pwd is None:
+            pwd_file = 'password2.txt' if user == 'bot' else 'password.txt'
+            user_file = 'username2.txt' if user == 'bot' else 'username.txt'
+            pwd = open(pwd_file).read().strip()
+            username = open(user_file).read().strip()
         self.login(username, pwd)
 
         self.errors = []
