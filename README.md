@@ -7,7 +7,7 @@ pip install -U git+git://github.com/RheingoldRiver/esportswiki_editing
 
 # Logging in
 
-The function `login` should be your single point of entry to create an `EsportsSite` object. This function expect the following files in **the same directory as your code**:
+The function `login` should be your single point of entry to create an `EsportsSite` object. This function expects the following files in **the same directory as your code**:
 * `username.txt` - your user name (for the login `me`)
 * `password.txt` - your bot password (for the login `me`)
 * `username2.txt` - your bot's user name (for the login `bot`)
