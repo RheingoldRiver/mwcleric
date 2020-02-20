@@ -4,7 +4,7 @@ This library is basically an `mwclient` (https://github.com/mwclient/mwclient) w
 
 # Install/upgrade:
 ```
-pip install -U git+git://github.com/RheingoldRiver/esportswiki_editing
+pip install -U git+git://github.com/RheingoldRiver/river_mwclient
 ```
 
 You probably also want development version of `mwclient`:
