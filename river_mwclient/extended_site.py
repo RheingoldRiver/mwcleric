@@ -2,7 +2,12 @@ import mwclient, datetime
 
 
 class ExtendedSite(mwclient.Site):
-
+    """
+    Various utilities that extend mwclient and could be useful on any wiki/wiki farm
+    Utilities here should not depend on any extensions
+    There's no intention to develop anything that's not useful on Gamepedia/Gamepedia esports wikis
+    but anything that's platform or extension-specific will go in GamepediaSite instead
+    """
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled'
                                   , **kwargs):
