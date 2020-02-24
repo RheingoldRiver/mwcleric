@@ -30,7 +30,7 @@ class EsportsSite(object):
         else:
             self.client = GamepediaSite(self.get_wiki(wiki), **kwargs)
 
-        self.cargo_client = CargoSite
+        self.cargo_client = CargoSite(self.client)
 
     @staticmethod
     def get_wiki(wiki):
