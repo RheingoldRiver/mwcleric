@@ -14,12 +14,15 @@ class GamepediaSite(object):
 
     def __init__(self, wiki: str=None, stg=False,
                  client: ExtendedSite = None,
+                 username=None, password=None, user_file=None,
                  **kwargs):
         if client:
             self.client = client
         else:
             suffix = 'io' if stg else 'com'
             wiki = '%s.gamepedia.' % wiki + suffix
-            self.client = ExtendedSite(wiki, path='/', **kwargs)
+            self.client = ExtendedSite(wiki, path='/',
+                                       username=username, password=password, user_file=user_file,
+                                       **kwargs)
 
         self.cargo_client = CargoSite(client=self.client)

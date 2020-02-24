@@ -21,7 +21,9 @@ class EsportsSite(object):
     client = None
     gp_client = None
 
-    def __init__(self, wiki: str=None, gp_client: GamepediaSite = None, **kwargs):
+    def __init__(self, wiki: str=None, gp_client: GamepediaSite = None,
+                 username=None, password=None, user_file=None,
+                 **kwargs):
         """
         Create a site object. Username is optional
         :param wiki: Name of a wiki
@@ -29,7 +31,9 @@ class EsportsSite(object):
         if gp_client:
             self.gp_client = gp_client
         else:
-            self.gp_client = GamepediaSite(self.get_wiki(wiki), **kwargs)
+            self.gp_client = GamepediaSite(self.get_wiki(wiki),
+                                           username=username, password=password, user_file=user_file,
+                                           **kwargs)
 
         self.cargo_client = self.gp_client.cargo_client
         self.client = self.gp_client.client
