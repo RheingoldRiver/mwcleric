@@ -35,4 +35,4 @@ class CargoSite(object):
             if page in pages:
                 continue
             pages.append(page)
-            yield (self.pages[page])
+            yield (self.client.pages[page])
