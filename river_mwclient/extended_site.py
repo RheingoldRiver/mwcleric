@@ -16,13 +16,17 @@ class ExtendedSite(mwclient.Site):
     username = None
     password = None
 
-    def __init__(self, wiki: str, username: str = None, password: str = None, path='/'):
+    def __init__(self, wiki: str, path='/',
+                 username: str = None, password: str = None, user_file: str = None,
+                 **kwargs):
         super().__init__(wiki, path=path)
         self.wiki = wiki
         self.username = username  # set this in login if not provided here
         self.password = password  # set this in login if not provided here
         if username and password:
-            self.login(username=username, password=password)
+            self.login(username=username, password=password, **kwargs)
+        elif user_file:
+            self.login_from_file(user_file, **kwargs)
 
     def login(self, username=None, password=None, **kwargs):
         self.username = username
