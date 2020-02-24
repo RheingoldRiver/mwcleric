@@ -1,11 +1,12 @@
 from .gamepedia_site import GamepediaSite
+from .cargo_site import CargoSite
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
                      'default-loadout', 'commons', 'teamfighttactics']
 
 
-class EsportsSite(GamepediaSite):
+class EsportsSite(object):
     """
     Functions for connecting to and editing specifically to Gamepedia esports wikis.
 
@@ -16,13 +17,20 @@ class EsportsSite(GamepediaSite):
     specifically querying esports Cargo tables that won't exist elsewhere
     """
     ALL_ESPORTS_WIKIS = ALL_ESPORTS_WIKIS
+    cargo_client = None
+    client = None
 
-    def __init__(self, wiki: str, **kwargs):
+    def __init__(self, wiki: str=None, client: ExtendedSite = None, **kwargs):
         """
         Create a site object. Username is optional
         :param wiki: Name of a wiki
         """
-        super().__init__(self.get_wiki(wiki), **kwargs)
+        if client:
+            self.client = client
+        else:
+            self.client = GamepediaSite(self.get_wiki(wiki), **kwargs)
+
+        self.cargo_client = CargoSite
 
     @staticmethod
     def get_wiki(wiki):
