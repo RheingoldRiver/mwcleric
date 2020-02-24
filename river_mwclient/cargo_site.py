@@ -1,7 +1,8 @@
 import mwclient
+from .extended_site import ExtendedSite
 
 
-class CargoSite(mwclient.Site):
+class CargoSite(ExtendedSite):
     """
     Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
     """
