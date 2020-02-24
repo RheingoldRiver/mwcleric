@@ -19,18 +19,20 @@ class EsportsSite(object):
     ALL_ESPORTS_WIKIS = ALL_ESPORTS_WIKIS
     cargo_client = None
     client = None
+    gp_client = None
 
-    def __init__(self, wiki: str=None, client: ExtendedSite = None, **kwargs):
+    def __init__(self, wiki: str=None, gp_client: GamepediaSite = None, **kwargs):
         """
         Create a site object. Username is optional
         :param wiki: Name of a wiki
         """
-        if client:
-            self.client = client
+        if gp_client:
+            self.gp_client = gp_client
         else:
-            self.client = GamepediaSite(self.get_wiki(wiki), **kwargs)
+            self.gp_client = GamepediaSite(self.get_wiki(wiki), **kwargs)
 
-        self.cargo_client = CargoSite(self.client)
+        self.cargo_client = self.gp_client.cargo_client
+        self.client = self.gp_client.client
 
     @staticmethod
     def get_wiki(wiki):
