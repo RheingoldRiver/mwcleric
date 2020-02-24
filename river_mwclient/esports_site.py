@@ -35,7 +35,7 @@ class EsportsSite(GamepediaSite):
         TODO: move this to a separate library, this is too specific for inclusion here
         :return:
         """
-        for item in self.cargoquery(
+        for item in self.cargo_client.query(
                 tables="Tournaments,_pageData",
                 join_on="Tournaments.StandardName_Redirect=_pageData._pageName",
                 where="_pageData._pageName IS NULL AND Tournaments.StandardName_Redirect IS NOT NULL",

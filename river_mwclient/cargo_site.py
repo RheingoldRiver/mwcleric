@@ -1,22 +1,29 @@
-import mwclient
 from .extended_site import ExtendedSite
 
 
-class CargoSite(ExtendedSite):
+class CargoSite(object):
     """
     Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
     """
-    def cargoquery(self, **kwargs):
-        response = self.api('cargoquery', **kwargs)
+    client = None
+
+    def __init__(self, client, **kwargs):
+        if not client:
+            self.client = ExtendedSite(**kwargs)
+        else:
+            self.client = client
+
+    def query(self, **kwargs):
+        response = self.client.api('cargoquery', **kwargs)
         ret = []
         for item in response['cargoquery']:
             ret.append(item['title'])
         return ret
 
-    def cargo_pagelist(self, fields=None, limit="max", page_pattern="%s", **kwargs):
+    def page_list(self, fields=None, limit="max", page_pattern="%s", **kwargs):
         field = fields.split('=')[1] if '=' in fields else fields
         group_by = fields.split('=')[0]
-        response = self.api('cargoquery',
+        response = self.client.api('cargoquery',
                             fields=fields,
                             group_by=group_by,
                             limit=limit,

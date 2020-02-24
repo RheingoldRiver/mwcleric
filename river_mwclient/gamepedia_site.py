@@ -11,12 +11,9 @@ class GamepediaSite(ExtendedSite):
     """
     cargo_client = None
 
-    def __init__(self, wiki: str, stg=False, cargo_site=None, username=None, password=None):
+    def __init__(self, wiki: str, stg=False, username: str = None, password: str = None):
         suffix = 'io' if stg else 'com'
         wiki = '%s.gamepedia.' % wiki + suffix
-        super().__init__(wiki, path='/')
-        if not cargo_site:
-            # this is where I'm making a clone of the site?
-            # also what if I do site = GamepediaSite and then site.login_from_file()
-            # how am i logging into the cargo client too
-            self.cargo_client = CargoSite(wiki, username=username, password=password)
+        super().__init__(wiki, path='/', username=username, password=password)
+
+        self.cargo_client = CargoSite(client=self)
