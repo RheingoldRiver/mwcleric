@@ -2,7 +2,9 @@ import mwclient
 
 
 class CargoSite(mwclient.Site):
-
+    """
+    Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
+    """
     def cargoquery(self, **kwargs):
         response = self.api('cargoquery', **kwargs)
         ret = []
