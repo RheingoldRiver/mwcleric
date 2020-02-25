@@ -46,6 +46,15 @@ class ExtendedSite(mwclient.Site):
         username = open(user_file).read().strip()
         self.login(username=username, password=password, **kwargs)
 
+    def pages_using(self, template, **kwargs):
+        if ':' not in template:
+            title = 'Template:' + template
+        elif template.startswith(':'):
+            title = template[1:]
+        else:
+            title = template
+        return self.pages[title].embeddedin(**kwargs)
+
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled'
                                   , **kwargs):
