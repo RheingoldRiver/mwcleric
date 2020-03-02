@@ -2,9 +2,10 @@ import mwclient
 import datetime
 from .wiki_script_error import WikiScriptError
 from .wiki_content_error import WikiContentError
+from .auth_credentials import AuthCredentials
 
 
-class ExtendedSite(mwclient.Site):
+class WikiClient(mwclient.Site):
     """
     Various utilities that extend mwclient and could be useful on any wiki/wiki farm
     Utilities here should not depend on any extensions
@@ -12,39 +13,17 @@ class ExtendedSite(mwclient.Site):
     but anything that's platform or extension-specific will go in GamepediaSite instead
     """
     errors = []
-    wiki = None
-    username = None
-    password = None
+    url = None
 
-    def __init__(self, wiki: str, path='/',
-                 username: str = None, password: str = None, user_file: str = None,
-                 **kwargs):
-        super().__init__(wiki, path=path)
-        self.wiki = wiki
-        self.username = username  # set this in login if not provided here
-        self.password = password  # set this in login if not provided here
-        if username and password:
-            self.login(username=username, password=password, **kwargs)
-        elif user_file:
-            self.login_from_file(user_file, **kwargs)
+    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, **kwargs):
+        super().__init__(url, path=path)
+        self.url = url
+        self.credentials = credentials
+        if credentials:
+            self.login(credentials, **kwargs)
 
-    def login(self, username=None, password=None, **kwargs):
-        self.username = username
-        self.password = password
-        super().login(username=username, password=password, **kwargs)
-
-    def login_from_file(self, user, **kwargs):
-        """
-        Log in using the configuration expected by the original log_into_wiki that I wrote
-        :param user: Either "me" (reads from username.txt & password.txt) or "bot" (username2/password2)
-        :param kwargs: Sent directly to super().login
-        :return: none
-        """
-        pwd_file = 'password2.txt' if user == 'bot' else 'password.txt'
-        user_file = 'username2.txt' if user == 'bot' else 'username.txt'
-        password = open(pwd_file).read().strip()
-        username = open(user_file).read().strip()
-        self.login(username=username, password=password, **kwargs)
+    def login(self, credentials: AuthCredentials, **kwargs):
+        super().login(username=credentials.username, password=credentials.password, **kwargs)
 
     def pages_using(self, template, **kwargs):
         if ':' not in template:

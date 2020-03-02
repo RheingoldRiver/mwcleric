@@ -1,17 +1,14 @@
-from .extended_site import ExtendedSite
+from .wiki_client import WikiClient
 
 
-class CargoSite(object):
+class CargoClient(object):
     """
     Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
     """
     client = None
 
     def __init__(self, client, **kwargs):
-        if not client:
-            self.client = ExtendedSite(**kwargs)
-        else:
-            self.client = client
+        self.client = client
 
     def query(self, **kwargs):
         response = self.client.api('cargoquery', **kwargs)
@@ -24,11 +21,11 @@ class CargoSite(object):
         field = fields.split('=')[1] if '=' in fields else fields
         group_by = fields.split('=')[0]
         response = self.client.api('cargoquery',
-                            fields=fields,
-                            group_by=group_by,
-                            limit=limit,
-                            **kwargs
-                            )
+                                   fields=fields,
+                                   group_by=group_by,
+                                   limit=limit,
+                                   **kwargs
+                                   )
         pages = []
         for item in response['cargoquery']:
             page = page_pattern % item['title'][field]
