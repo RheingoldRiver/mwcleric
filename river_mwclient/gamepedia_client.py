@@ -1,6 +1,6 @@
 from .cargo_client import CargoClient
 from .wiki_client import WikiClient
-from .esports_session_manager import session_manager
+from .gamepedia_session_manager import session_manager
 from .auth_credentials import AuthCredentials
 
 
