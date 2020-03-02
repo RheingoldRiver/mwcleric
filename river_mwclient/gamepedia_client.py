@@ -4,7 +4,7 @@ from .gamepedia_session_manager import session_manager
 from .auth_credentials import AuthCredentials
 
 
-class EsportsClient(object):
+class GamepediaClient(object):
     """
     Functions for connecting to and editing specifically Gamepedia wikis.
     """
