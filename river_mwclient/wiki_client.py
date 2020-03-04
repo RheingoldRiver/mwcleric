@@ -1,11 +1,12 @@
-import mwclient
+from mwclient import Site
 import datetime
 from .wiki_script_error import WikiScriptError
 from .wiki_content_error import WikiContentError
 from .auth_credentials import AuthCredentials
+from .session_manager import session_manager
 
 
-class WikiClient(mwclient.Site):
+class WikiClient(object):
     """
     Various utilities that extend mwclient and could be useful on any wiki/wiki farm
     Utilities here should not depend on any extensions
@@ -14,16 +15,15 @@ class WikiClient(mwclient.Site):
     """
     errors = []
     url = None
+    client = None
 
-    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, **kwargs):
-        super().__init__(url, path=path)
+    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,  **kwargs):
         self.url = url
-        self.credentials = credentials
-        if credentials:
-            self.login(credentials, **kwargs)
+        if client:
+            self.client = client
+            return
 
-    def login(self, credentials: AuthCredentials, **kwargs):
-        super().login(username=credentials.username, password=credentials.password, **kwargs)
+        self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
 
     def pages_using(self, template, **kwargs):
         if ':' not in template:
@@ -32,14 +32,13 @@ class WikiClient(mwclient.Site):
             title = template[1:]
         else:
             title = template
-        return self.pages[title].embeddedin(**kwargs)
+        return self.client.pages[title].embeddedin(**kwargs)
 
     def recentchanges_by_interval(self, minutes, offset=0,
-                                  prop='title|ids|tags|user|patrolled'
-                                  , **kwargs):
+                                  prop='title|ids|tags|user|patrolled', **kwargs):
         now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
         then = now - datetime.timedelta(minutes=minutes)
-        result = self.recentchanges(
+        result = self.client.recentchanges(
             start=now.isoformat(),
             end=then.isoformat(),
             limit='max',
@@ -57,22 +56,22 @@ class WikiClient(mwclient.Site):
         revisions = self.recent_titles_by_interval(*args, **kwargs)
         titles = [_['title'] for _ in revisions]
         for title in titles:
-            yield self.pages[title]
+            yield self.client.pages[title]
 
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
         now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
         then = now - datetime.timedelta(minutes=minutes)
-        logs = self.api('query', format='json',
-                        list='logevents',
-                        # lestart=now.isoformat(),
-                        leend=then.isoformat(),
-                        leprop=leprop,
-                        lelimit=lelimit,
-                        ledir='older',
-                        **kwargs
-                        )
+        logs = self.client.api('query', format='json',
+                               list='logevents',
+                               #  lestart=now.isoformat(),
+                               leend=then.isoformat(),
+                               leprop=leprop,
+                               lelimit=lelimit,
+                               ledir='older',
+                               **kwargs
+                               )
         return logs['query']['logevents']
 
     def error_script(self, title: str = None, error: Exception = None):
@@ -84,7 +83,7 @@ class WikiClient(mwclient.Site):
     def report_all_errors(self, error_title):
         if not self.errors:
             return
-        error_page = self.pages['Log:' + error_title]
+        error_page = self.client.pages['Log:' + error_title]
         errors = [_.format_for_print() for _ in self.errors]
         error_text = '<br>\n'.join(errors)
         error_page.append('\n' + error_text)

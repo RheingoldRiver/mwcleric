@@ -32,4 +32,4 @@ class CargoClient(object):
             if page in pages:
                 continue
             pages.append(page)
-            yield (self.client.pages[page])
+            yield self.client.pages[page]

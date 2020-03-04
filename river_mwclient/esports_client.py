@@ -1,6 +1,6 @@
+from mwclient import Site
 from .cargo_client import CargoClient
 from .wiki_client import WikiClient
-from .esports_session_manager import session_manager
 from .auth_credentials import AuthCredentials
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
@@ -8,7 +8,7 @@ ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'default-loadout', 'commons', 'teamfighttactics']
 
 
-class EsportsClient(object):
+class EsportsClient(WikiClient):
     """
     Functions for connecting to and editing specifically to Gamepedia esports wikis.
 
@@ -16,10 +16,10 @@ class EsportsClient(object):
     """
     ALL_ESPORTS_WIKIS = ALL_ESPORTS_WIKIS
     cargo_client: CargoClient = None
-    client: WikiClient = None
+    client: Site = None
     wiki: str = None
 
-    def __init__(self, wiki: str, client: WikiClient = None,
+    def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, stg: bool = False,
                  **kwargs):
         """
@@ -30,19 +30,12 @@ class EsportsClient(object):
         :param stg: if it's a staging wiki or not
         """
         self.wiki = self.get_wiki(wiki)
-        if client:
-            # completely skip the session manager
-            self.cargo_client = CargoClient(client)
-            self.client = client
-            return
 
         suffix = 'io' if stg else 'com'
         url = '{}.gamepedia.{}'.format(wiki, suffix)
 
-        self.client, self.cargo_client = session_manager.get_client(url=url,
-                                                                    credentials=credentials,
-                                                                    **kwargs
-                                                                    )
+        super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
+        self.cargo_client = CargoClient(self.client)
 
     @staticmethod
     def get_wiki(wiki):
