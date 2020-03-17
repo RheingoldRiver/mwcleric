@@ -3,7 +3,7 @@ from .auth_credentials import AuthCredentials
 
 
 class SessionManager(object):
-    """Manages instances of EsportsClient
+    """Manages instances of WikiClient
     """
     existing_wikis = {}
 

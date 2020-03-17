@@ -74,10 +74,10 @@ class WikiClient(object):
                                )
         return logs['query']['logevents']
 
-    def error_script(self, title: str = None, error: Exception = None):
+    def log_error_script(self, title: str = None, error: Exception = None):
         self.errors.append(WikiScriptError(title, error))
 
-    def error_content(self, title: str = None, text: str = None):
+    def log_error_content(self, title: str = None, text: str = None):
         self.errors.append(WikiContentError(title, error=text))
 
     def report_all_errors(self, error_title):
