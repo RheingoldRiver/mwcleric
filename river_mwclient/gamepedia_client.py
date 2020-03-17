@@ -1,4 +1,4 @@
-from river_mwclient.site import Site
+from .site import Site
 from .cargo_client import CargoClient
 from .wiki_client import WikiClient
 from .auth_credentials import AuthCredentials
