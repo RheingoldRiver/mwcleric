@@ -1,4 +1,4 @@
-from mwclient import Site
+from river_mwclient.site import Site
 import datetime
 from .wiki_script_error import WikiScriptError
 from .wiki_content_error import WikiContentError

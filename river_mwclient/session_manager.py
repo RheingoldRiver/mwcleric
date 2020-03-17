@@ -1,4 +1,4 @@
-from mwclient import Site
+from river_mwclient.site import Site
 from .auth_credentials import AuthCredentials
 
 
