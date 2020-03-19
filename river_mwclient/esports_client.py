@@ -32,7 +32,7 @@ class EsportsClient(WikiClient):
         self.wiki = self.get_wiki(wiki)
 
         suffix = 'io' if stg else 'com'
-        url = '{}.gamepedia.{}'.format(wiki, suffix)
+        url = '{}.gamepedia.{}'.format(self.wiki, suffix)
 
         super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
         self.cargo_client = CargoClient(self.client)
