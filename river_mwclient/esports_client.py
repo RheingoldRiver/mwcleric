@@ -2,6 +2,7 @@ from .site import Site
 from .cargo_client import CargoClient
 from .wiki_client import WikiClient
 from .auth_credentials import AuthCredentials
+from .esports_lookup_cache import EsportsLookupCache
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
@@ -21,6 +22,7 @@ class EsportsClient(WikiClient):
 
     def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, stg: bool = False,
+                 cache: EsportsLookupCache = None,
                  **kwargs):
         """
         Create a site object.
@@ -35,6 +37,10 @@ class EsportsClient(WikiClient):
         url = '{}.gamepedia.{}'.format(self.wiki, suffix)
 
         super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
+        if cache:
+            self.cache = cache
+        else:
+            self.cache = EsportsLookupCache(self.client)
         self.cargo_client = CargoClient(self.client)
 
     @staticmethod
