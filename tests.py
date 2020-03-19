@@ -7,10 +7,10 @@ credentials = AuthCredentials(user_file='me')
 
 site = EsportsClient('lol', credentials=credentials)
 
-print(site.cache.get('Champion', 'lee', 'link'))
+print(site.cache.get('Team', 'tsm', 'link'))
 
 try:
-    print(site.cache.get('Champion', 'lee', 'long'))
+    print(site.cache.get('Team', 'tsm', 'not_a_real_length'))
 except EsportsCacheKeyError as e:
     print(e)
 
