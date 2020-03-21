@@ -94,7 +94,7 @@ class WikiClient(object):
 
     def modify_template(self, template_name, f, pages=None, limit=-1, startat_page=None, summary="Bot Edit"):
         if not pages:
-            pages = self.pages_using(template)
+            pages = self.pages_using(template_name)
         passed_startat = False
         if not startat_page:
             passed_startat = True
