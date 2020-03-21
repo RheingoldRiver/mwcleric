@@ -3,3 +3,4 @@
 !.gitignore
 !/river_mwclient/
 !README.md
+scratch.py

@@ -13,3 +13,7 @@ class EsportsCacheKeyError(KeyError):
             self.file,
             ', '.join(self.allowed_keys)
         )
+
+
+class TemplateModifierNotImplemented(NotImplementedError):
+    pass

@@ -1,5 +1,6 @@
-from .wiki_client import WikiClient
 from mwparserfromhell import parse
+from .wiki_client import WikiClient
+from .errors import TemplateModifierNotImplemented
 
 
 class TemplateModifierBase(object):
@@ -13,7 +14,7 @@ class TemplateModifierBase(object):
         self.startat_page = startat_page
 
     def update(self, template):
-        pass
+        raise TemplateModifierNotImplemented()
 
     def run(self):
         lmt = 0
