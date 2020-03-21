@@ -91,32 +91,3 @@ class WikiClient(object):
 
         # reset the list so we can reuse later if needed
         self.errors = []
-
-    def modify_template(self, template_name, f, pages=None, limit=-1, startat_page=None, summary="Bot Edit"):
-        if not pages:
-            pages = self.pages_using(template_name)
-        passed_startat = False
-        if not startat_page:
-            passed_startat = True
-        lmt = 0
-        for page in pages:
-            if lmt == limit:
-                break
-            if startat_page and page.name == startat_page:
-                passed_startat = True
-            if not passed_startat:
-                print("Skipping page %s, before startat" % page.name)
-                continue
-            lmt += 1
-            text = page.text()
-            wikitext = parse(text)
-            for template in wikitext.filter_templates():
-                if template.name.matches(template_name):
-                    f(template)
-
-            newtext = str(wikitext)
-            if text != newtext:
-                print('Saving page %s...' % page.name)
-                page.save(newtext, summary=summary)
-            else:
-                print('Skipping page %s...' % page.name)
