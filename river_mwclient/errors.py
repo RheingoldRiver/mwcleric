@@ -15,5 +15,9 @@ class EsportsCacheKeyError(KeyError):
         )
 
 
+class PageModifierNotImplemented(NotImplementedError):
+    pass
+
+
 class TemplateModifierNotImplemented(NotImplementedError):
     pass
