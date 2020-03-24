@@ -11,7 +11,7 @@ class TemplateModifierBase(PageModifierBase):
         page_list = page_list if page_list else site.pages_using(template)
         super().__init__(site, page_list=page_list, limit=limit, summary=summary, startat_page=startat_page)
 
-    def update_page(self):
+    def update_wikitext(self):
         for template in self.current_wikitext.filter_templates():
             if template.name.matches(self.template_name):
                 self.current_template = template
