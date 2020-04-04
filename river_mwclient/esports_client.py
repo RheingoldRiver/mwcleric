@@ -6,7 +6,8 @@ from .esports_lookup_cache import EsportsLookupCache
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
-                     'default-loadout', 'commons', 'teamfighttactics']
+                     'splatoon2', 'legendsofruneterra',
+                     'default-loadout', 'commons', 'teamfighttactics', 'valorant']
 
 
 class EsportsClient(WikiClient):
