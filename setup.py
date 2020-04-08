@@ -14,5 +14,5 @@ setuptools.setup(
     url="https://github.com/RheingoldRiver/river_mwclient",
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=['mwclient', 'mwparserfromhell', 'pytz']
+    install_requires=['mwparserfromhell', 'pytz']
 )
