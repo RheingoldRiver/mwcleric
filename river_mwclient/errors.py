@@ -21,3 +21,7 @@ class PageModifierNotImplemented(NotImplementedError):
 
 class TemplateModifierNotImplemented(NotImplementedError):
     pass
+
+
+class InvalidUserFile(KeyError):
+    pass
