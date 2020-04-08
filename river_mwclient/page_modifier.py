@@ -10,7 +10,9 @@ class PageModifierBase(object):
     prioritize_plaintext = False
     prioritize_wikitext = False
 
-    def __init__(self, site: WikiClient, page_list=None, limit=-1, summary=None, startat_page=None):
+    def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None):
+        if title_list is not None:
+            page_list = [site.client.pages[p] for p in title_list]
         self.summary = summary if summary else 'Bot Edit'
         self.site = site
         self.page_list = page_list

@@ -50,22 +50,6 @@ class EsportsClient(WikiClient):
             return wiki
         return wiki + '-esports'
 
-    def standard_name_redirects(self):
-        """
-        TODO: move this to a separate library, this is too specific for inclusion here
-        :return:
-        """
-        for item in self.cargo_client.query(
-                tables="Tournaments,_pageData",
-                join_on="Tournaments.StandardName_Redirect=_pageData._pageName",
-                where="_pageData._pageName IS NULL AND Tournaments.StandardName_Redirect IS NOT NULL",
-                fields="Tournaments.StandardName_Redirect=Name,Tournaments._pageName=Target",
-                limit="max"
-        ):
-            page = self.client.pages[item['Name']]
-            target = item['Target']
-            page.save('#redirect[[%s]]' % target, summary="creating needed CM_StandardName redirects")
-
     def other_wikis(self):
         """
         :return: Generator of wiki names as strings, not site objects
