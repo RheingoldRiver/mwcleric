@@ -29,7 +29,7 @@ class AuthCredentials(object):
             usr_key = 'WIKI_USERNAME_{}'.format(user_file.upper())
             pwd = getenv(pwd_key, None)
             usr = getenv(usr_key, None)
-            if pwd is None or usr is None:
+            if not pwd or not usr:
                 raise InvalidUserFile
             self.password = pwd
             self.username = usr

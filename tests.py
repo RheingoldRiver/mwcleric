@@ -5,12 +5,12 @@ from river_mwclient.errors import EsportsCacheKeyError
 
 credentials = AuthCredentials(user_file='me')
 
-site = EsportsClient('lol', credentials=credentials)
+site = EsportsClient('valorant', credentials=credentials)
 
-print(site.cache.get('Team', 'tsm', 'link'))
+print(site.cache.get('Team', 't1', 'link'))
 
 try:
-    print(site.cache.get('Team', 'tsm', 'not_a_real_length'))
+    print(site.cache.get('Team', 't1', 'not_a_real_length'))
 except EsportsCacheKeyError as e:
     print(e)
 
