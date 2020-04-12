@@ -14,12 +14,12 @@ class WikiClient(object):
     There's no intention to develop anything that's not useful on Gamepedia/Gamepedia esports wikis
     but anything that's platform or extension-specific will go in GamepediaSite instead
     """
-    errors = []
     url = None
     client = None
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,  **kwargs):
         self.url = url
+        self.errors = []
         if client:
             self.client = client
             return
