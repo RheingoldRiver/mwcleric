@@ -18,10 +18,14 @@ If you're using PyCharm, press alt+F12 to open the console and you can install d
 # Logging in
 
 The function `login` should be your single point of entry to create an `EsportsSite` object. This function expects the following files in **the same directory as your code**:
-* `username.txt` - your user name (for the login `me`)
-* `password.txt` - your bot password (for the login `me`)
-* `username2.txt` - your bot's user name (for the login `bot`)
-* `password2.txt` - your bot's bot password (for the login `bot`)
+* `username_me.txt` - your user name (for the login `me`)
+* `password_me.txt` - your bot password (for the login `me`)
+* `username_bot.txt` - your bot's user name (for the login `bot`)
+* `password_bot.txt` - your bot's bot password (for the login `bot`)
+
+These files would allow you to log in as `me` or as `bot`. Remember the username includes both your account name **and also the name of your bot password**, separated by an `@`.
+
+If you prefer, you can set environment variables called `WIKI_USERNAME_ME`, `WIKI_PASSWORD_ME`, etc. 
 
 If you don't want to log in, you can just create an EsportsSite/GamepediaSite object and never log in.
 
