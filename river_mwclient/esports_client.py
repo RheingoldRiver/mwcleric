@@ -50,6 +50,15 @@ class EsportsClient(WikiClient):
             return wiki
         return wiki + '-esports'
 
+    def create_tables(self, tables):
+        self.recreate_tables(tables, replacement=False)
+
+    def recreate_tables(self, tables, replacement=True):
+        if isinstance(tables, str):
+            tables = [tables]
+        templates = ['{}/CargoDec'.format(_) for _ in tables]
+        self.cargo_client.recreate(templates, replacement=replacement)
+
     def other_wikis(self):
         """
         :return: Generator of wiki names as strings, not site objects

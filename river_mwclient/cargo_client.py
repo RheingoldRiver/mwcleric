@@ -1,4 +1,4 @@
-from .wiki_client import WikiClient
+from river_mwclient.site import Site
 
 
 class CargoClient(object):
@@ -7,7 +7,7 @@ class CargoClient(object):
     """
     client = None
 
-    def __init__(self, client, **kwargs):
+    def __init__(self, client: Site, **kwargs):
         self.client = client
 
     def query(self, **kwargs):
@@ -33,3 +33,16 @@ class CargoClient(object):
                 continue
             pages.append(page)
             yield self.client.pages[page]
+
+    def create(self, templates):
+        self.recreate(templates, replacement=False)
+
+    def recreate(self, templates, replacement=True):
+        if isinstance(templates, str):
+            templates = [templates]
+        token = self.client.get_token('csrf')
+        for template in templates:
+            if not replacement:
+                self.client.api('cargorecreatetables', template=template, token=token)
+                continue
+            self.client.api('cargorecreatetables', template=template, createReplacement=1, token=token)
