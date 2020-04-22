@@ -5,7 +5,7 @@ class EsportsCacheKeyError(KeyError):
         self.length = length
         self.value_table = value_table
         self.allowed_keys = value_table.keys()
-
+    
     def __str__(self):
         return "Invalid length of {} requested for {} in {}. Allowed: {}".format(
             self.length,

@@ -1,8 +1,8 @@
-from .site import Site
-from .cargo_client import CargoClient
-from .wiki_client import WikiClient
 from .auth_credentials import AuthCredentials
+from .cargo_client import CargoClient
 from .esports_lookup_cache import EsportsLookupCache
+from .site import Site
+from .wiki_client import WikiClient
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
@@ -20,7 +20,7 @@ class EsportsClient(WikiClient):
     cargo_client: CargoClient = None
     client: Site = None
     wiki: str = None
-
+    
     def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, stg: bool = False,
                  cache: EsportsLookupCache = None,
@@ -33,32 +33,32 @@ class EsportsClient(WikiClient):
         :param stg: if it's a staging wiki or not
         """
         self.wiki = self.get_wiki(wiki)
-
+        
         suffix = 'io' if stg else 'com'
         url = '{}.gamepedia.{}'.format(self.wiki, suffix)
-
+        
         super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
         if cache:
             self.cache = cache
         else:
             self.cache = EsportsLookupCache(self.client)
         self.cargo_client = CargoClient(self.client)
-
+    
     @staticmethod
     def get_wiki(wiki):
         if wiki in ['lol', 'teamfighttactics'] or wiki not in ALL_ESPORTS_WIKIS:
             return wiki
         return wiki + '-esports'
-
+    
     def create_tables(self, tables):
         self.recreate_tables(tables, replacement=False)
-
+    
     def recreate_tables(self, tables, replacement=True):
         if isinstance(tables, str):
             tables = [tables]
         templates = ['{}/CargoDec'.format(_) for _ in tables]
         self.cargo_client.recreate(templates, replacement=replacement)
-
+    
     def other_wikis(self):
         """
         :return: Generator of wiki names as strings, not site objects
@@ -67,16 +67,16 @@ class EsportsClient(WikiClient):
             if wiki == self.wiki:
                 continue
             yield wiki
-
+    
     def other_sites(self):
         for wiki in self.other_wikis():
             yield EsportsClient(wiki)
-
+    
     @staticmethod
     def all_wikis():
         for wiki in ALL_ESPORTS_WIKIS:
             yield wiki
-
+    
     @staticmethod
     def all_sites():
         """
@@ -85,7 +85,7 @@ class EsportsClient(WikiClient):
         """
         for wiki in ALL_ESPORTS_WIKIS:
             yield EsportsClient(wiki)
-
+    
     def all_sites_logged_in(self):
         for wiki in ALL_ESPORTS_WIKIS:
             yield EsportsClient(wiki, username=self.client.username, password=self.client.password)

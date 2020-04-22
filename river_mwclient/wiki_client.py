@@ -1,10 +1,10 @@
-from .site import Site
 import datetime
-from mwparserfromhell import parse
-from .wiki_script_error import WikiScriptError
-from .wiki_content_error import WikiContentError
+
 from .auth_credentials import AuthCredentials
 from .session_manager import session_manager
+from .site import Site
+from .wiki_content_error import WikiContentError
+from .wiki_script_error import WikiScriptError
 
 
 class WikiClient(object):
@@ -16,16 +16,16 @@ class WikiClient(object):
     """
     url = None
     client = None
-
-    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,  **kwargs):
+    
+    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None, **kwargs):
         self.url = url
         self.errors = []
         if client:
             self.client = client
             return
-
+        
         self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
-
+    
     def pages_using(self, template, **kwargs):
         if ':' not in template:
             title = 'Template:' + template
@@ -34,7 +34,7 @@ class WikiClient(object):
         else:
             title = template
         return self.client.pages[title].embeddedin(**kwargs)
-
+    
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled', **kwargs):
         now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
@@ -47,18 +47,18 @@ class WikiClient(object):
             **kwargs
         )
         return result
-
+    
     def recent_titles_by_interval(self, *args, **kwargs):
         revisions = self.recentchanges_by_interval(*args, **kwargs, toponly=0)
         titles = [_['title'] for _ in revisions]
         return titles
-
+    
     def recent_pages_by_interval(self, *args, **kwargs):
         revisions = self.recent_titles_by_interval(*args, **kwargs)
         titles = [_['title'] for _ in revisions]
         for title in titles:
             yield self.client.pages[title]
-
+    
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
@@ -74,13 +74,13 @@ class WikiClient(object):
                                **kwargs
                                )
         return logs['query']['logevents']
-
+    
     def log_error_script(self, title: str = None, error: Exception = None):
         self.errors.append(WikiScriptError(title, error))
-
+    
     def log_error_content(self, title: str = None, text: str = None):
         self.errors.append(WikiContentError(title, error=text))
-
+    
     def report_all_errors(self, error_title):
         if not self.errors:
             return
@@ -88,6 +88,6 @@ class WikiClient(object):
         errors = [_.format_for_print() for _ in self.errors]
         error_text = '<br>\n'.join(errors)
         error_page.append('\n' + error_text)
-
+        
         # reset the list so we can reuse later if needed
         self.errors = []

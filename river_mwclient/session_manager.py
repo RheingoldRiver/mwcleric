@@ -1,12 +1,12 @@
-from .site import Site
 from .auth_credentials import AuthCredentials
+from .site import Site
 
 
 class SessionManager(object):
     """Manages instances of WikiClient
     """
     existing_wikis = {}
-
+    
     def get_client(self, url: str = None, path: str = None, credentials: AuthCredentials = None, **kwargs):
         if url in self.existing_wikis:
             return self.existing_wikis[url]['client']

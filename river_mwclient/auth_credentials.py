@@ -1,11 +1,12 @@
 from os import path, getenv
+
 from .errors import InvalidUserFile
 
 
 class AuthCredentials(object):
     username = None
     password = None
-
+    
     def __init__(self, username=None, password=None, user_file=None):
         """
         Stores username and password for future use with a WikiClient.

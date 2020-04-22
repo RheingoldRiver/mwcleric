@@ -1,13 +1,14 @@
-from .site import Site
-from .errors import EsportsCacheKeyError
 import json
+
+from .errors import EsportsCacheKeyError
+from .site import Site
 
 
 class EsportsLookupCache(object):
     def __init__(self, site: Site):
         self.cache = {}
         self.site = site
-
+    
     def _get_json_lookup(self, filename):
         """
         Returns a json representation of the requested file, queriying the site to retrieve it if needed
@@ -23,7 +24,7 @@ class EsportsLookupCache(object):
         )
         self.cache[filename] = json.loads(result['expandtemplates']['wikitext'])
         return self.cache[filename]
-
+    
     def get(self, filename, key, length):
         """
         Returrns the length of the lookup of a key requested from the filename requested. Assumes the file has

@@ -6,18 +6,20 @@ class CargoClient(object):
     Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
     """
     client = None
-
+    
     def __init__(self, client: Site, **kwargs):
         self.client = client
-
+    
     def query(self, **kwargs):
         response = self.client.api('cargoquery', **kwargs)
         ret = []
         for item in response['cargoquery']:
             ret.append(item['title'])
         return ret
-
+    
     def page_list(self, fields=None, limit="max", page_pattern="%s", **kwargs):
+        if isinstance(fields, list):
+            fields = ', '.join(fields)
         field = fields.split('=')[1] if '=' in fields else fields
         group_by = fields.split('=')[0]
         response = self.client.api('cargoquery',
@@ -33,10 +35,10 @@ class CargoClient(object):
                 continue
             pages.append(page)
             yield self.client.pages[page]
-
+    
     def create(self, templates):
         self.recreate(templates, replacement=False)
-
+    
     def recreate(self, templates, replacement=True):
         if isinstance(templates, str):
             templates = [templates]

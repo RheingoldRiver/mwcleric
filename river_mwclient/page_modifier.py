@@ -1,6 +1,6 @@
 from mwparserfromhell import parse
+
 from .wiki_client import WikiClient
-from .errors import PageModifierNotImplemented
 
 
 class PageModifierBase(object):
@@ -9,7 +9,7 @@ class PageModifierBase(object):
     current_wikitext = None
     prioritize_plaintext = False
     prioritize_wikitext = False
-
+    
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
                  quiet=False):
         """Create a PageModifier object, which can perform operations to edit the plaintext
@@ -32,21 +32,21 @@ class PageModifierBase(object):
         self.passed_startat = False if startat_page else True
         self.startat_page = startat_page
         self.quiet = quiet
-
+    
     def _print(self, s):
         """Print iff the quite flag is not set to True"""
         if self.quiet:
             return
         print(s)
-
+    
     def update_wikitext(self):
         """This will be run iff update_wikitext isn't overridden in a subclass"""
         self.prioritize_plaintext = True
-
+    
     def update_plaintext(self):
         """This will be run iff update_plaintext isn't overridden in a subclass"""
         self.prioritize_wikitext = True
-
+    
     def run(self):
         lmt = 0
         for page in self.page_list:
