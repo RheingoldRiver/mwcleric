@@ -4,6 +4,21 @@ from .wiki_client import WikiClient
 
 
 class PageModifierBase(object):
+    """
+    Update pages on a wiki by using update_wikitext or update_plaintext.
+    
+    Available attributes you can change:
+    * self.current_text (do this in self.update_plaintext()
+    * self.current_wikitext (do this in self.update_wikitext()
+    
+    Available attributes you can use but not modify:
+    * self.current_page, which is an mwclient Page, so you can access page.name, etc
+    * self.site, a WikiClient object
+    
+    Specify a summary on initialization along with either a page_list or a title_list.
+    * page_list is a list of Page objects (for example maybe site.client.categories)
+    * title_list is a list of strings which will be turned into Page objects
+    """
     current_page = None
     current_text = None
     current_wikitext = None
@@ -13,7 +28,7 @@ class PageModifierBase(object):
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
                  quiet=False):
         """Create a PageModifier object, which can perform operations to edit the plaintext
-        or wikitext of a page
+        or wikitext of a page.
 
         :param site: a WikiClient to perform the edits on
         :param page_list: a list of Page objects to operate on, do not use with title_list
@@ -34,7 +49,7 @@ class PageModifierBase(object):
         self.quiet = quiet
     
     def _print(self, s):
-        """Print iff the quite flag is not set to True"""
+        """Print iff the quiet flag is not set to True"""
         if self.quiet:
             return
         print(s)
