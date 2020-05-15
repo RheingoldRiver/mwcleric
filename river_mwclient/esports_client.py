@@ -64,6 +64,8 @@ class EsportsClient(WikiClient):
             doc_page.save('{{Cargodoc}}', summary=summary)
             tl_page.touch()
         self.create_tables(tables)
+        for table in tables:
+            self.client.pages['Template:{}/CargoDec'.format(table)].touch()
     
     def create_tables(self, tables):
         self.recreate_tables(tables, replacement=False)
