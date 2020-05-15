@@ -50,6 +50,21 @@ class EsportsClient(WikiClient):
             return wiki
         return wiki + '-esports'
     
+    def setup_tables(self, tables):
+        if isinstance(tables, str):
+            tables = [tables]
+        summary = "Setting up Cargo declaration"
+        for table in tables:
+            tl_page = self.client.pages['Template:{}/CargoDec'.format(table)]
+            doc_page = self.client.pages['Template:{}/CargoDec/doc'.format(table)]
+            tl_page.save(
+                '{{Declare|doc={{{1|}}}}}<noinclude>{{documentation}}</noinclude>',
+                summary=summary
+            )
+            doc_page.save('{{Cargodoc}}', summary=summary)
+            tl_page.touch()
+        self.create_tables(tables)
+    
     def create_tables(self, tables):
         self.recreate_tables(tables, replacement=False)
     
