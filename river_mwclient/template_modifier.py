@@ -8,7 +8,8 @@ class TemplateModifierBase(PageModifierBase):
                  startat_page=None):
         self.template_name = template
         self.current_template = None
-        page_list = page_list if page_list else site.pages_using(template)
+        if not title_list:
+            page_list = page_list if page_list else site.pages_using(template)
         super().__init__(site, page_list=page_list, title_list=title_list, limit=limit, summary=summary,
                          startat_page=startat_page)
     
