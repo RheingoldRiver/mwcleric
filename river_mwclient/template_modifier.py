@@ -18,6 +18,7 @@ class TemplateModifierBase(PageModifierBase):
     def update_wikitext(self, wikitext):
         for template in wikitext.filter_templates():
             if template.name.matches(self.template_name):
+                self.current_template = template
                 self.update_template(template)
     
     def update_template(self, template):
