@@ -15,11 +15,10 @@ class TemplateModifierBase(PageModifierBase):
                          quiet=quiet,
                          startat_page=startat_page)
     
-    def update_wikitext(self):
-        for template in self.current_wikitext.filter_templates():
+    def update_wikitext(self, wikitext):
+        for template in wikitext.filter_templates():
             if template.name.matches(self.template_name):
-                self.current_template = template
-                self.update_template()
+                self.update_template(template)
     
-    def update_template(self):
+    def update_template(self, template):
         raise TemplateModifierNotImplemented()

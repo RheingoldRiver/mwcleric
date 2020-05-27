@@ -54,13 +54,20 @@ class PageModifierBase(object):
             return
         print(s)
     
-    def update_wikitext(self):
-        """This will be run iff update_wikitext isn't overridden in a subclass"""
+    def update_wikitext(self, wikitext):
+        """This will be run iff update_wikitext isn't overridden in a subclass.
+        
+        Modify wikitext in place.
+        """
         self.prioritize_plaintext = True
     
-    def update_plaintext(self):
-        """This will be run iff update_plaintext isn't overridden in a subclass"""
+    def update_plaintext(self, text):
+        """This will be run iff update_plaintext isn't overridden in a subclass.
+        
+        Modify text and return it.
+        """
         self.prioritize_wikitext = True
+        return text
     
     def run(self):
         lmt = 0
@@ -76,8 +83,8 @@ class PageModifierBase(object):
             self.current_text = page.text()
             self.current_page = page
             self.current_wikitext = parse(self.current_text)
-            self.update_plaintext()
-            self.update_wikitext()
+            self.current_text = self.update_plaintext(self.current_text)
+            self.update_wikitext(self.current_wikitext)
             newtext = str(self.current_wikitext)
             if newtext != self.current_page.text() and not self.prioritize_plaintext:
                 self._print('Saving page %s...' % page.name)
