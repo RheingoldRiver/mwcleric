@@ -1,4 +1,5 @@
 from mwparserfromhell import parse
+from time import sleep
 
 from .wiki_client import WikiClient
 
@@ -26,7 +27,7 @@ class PageModifierBase(object):
     prioritize_wikitext = False
     
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
-                 quiet=False):
+                 quiet=False, lag=0):
         """Create a PageModifier object, which can perform operations to edit the plaintext
         or wikitext of a page.
 
@@ -37,6 +38,7 @@ class PageModifierBase(object):
         :param summary: edit summary
         :param startat_page: skip to this page
         :param quiet: don't print any console output (set to True for cron processes)
+        :param lag: sleep this many seconds before saving
         """
         if title_list is not None:
             page_list = [site.client.pages[p] for p in title_list]
@@ -46,6 +48,7 @@ class PageModifierBase(object):
         self.limit = limit
         self.passed_startat = False if startat_page else True
         self.startat_page = startat_page
+        self.lag = lag
         self.quiet = quiet
     
     def _print(self, s):
@@ -88,9 +91,11 @@ class PageModifierBase(object):
             newtext = str(self.current_wikitext)
             if newtext != self.current_page.text() and not self.prioritize_plaintext:
                 self._print('Saving page %s...' % page.name)
+                sleep(self.lag)
                 page.save(newtext, summary=self.summary)
             elif self.current_text != self.current_page.text():
                 self._print('Saving page %s...' % page.name)
+                sleep(self.lag)
                 page.save(self.current_text, summary=self.summary)
             else:
                 self._print('Skipping page %s...' % page.name)
