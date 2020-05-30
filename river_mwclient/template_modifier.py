@@ -5,16 +5,14 @@ from .wiki_client import WikiClient
 
 class TemplateModifierBase(PageModifierBase):
     def __init__(self, site: WikiClient, template, page_list=None, title_list=None, limit=-1, summary=None,
-                 quiet=False,
-                 lag=0,
+                 quiet=False, lag=0, tags=None,
                  startat_page=None):
         self.template_name = template
         self.current_template = None
         if not title_list:
             page_list = page_list if page_list else site.pages_using(template)
         super().__init__(site, page_list=page_list, title_list=title_list, limit=limit, summary=summary,
-                         quiet=quiet,
-                         lag=lag,
+                         quiet=quiet, lag=lag, tags=tags,
                          startat_page=startat_page)
     
     def update_wikitext(self, wikitext):

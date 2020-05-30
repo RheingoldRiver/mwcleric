@@ -27,6 +27,7 @@ class PageModifierBase(object):
     prioritize_wikitext = False
     
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
+                 tags=None,
                  quiet=False, lag=0):
         """Create a PageModifier object, which can perform operations to edit the plaintext
         or wikitext of a page.
@@ -50,6 +51,7 @@ class PageModifierBase(object):
         self.startat_page = startat_page
         self.lag = lag
         self.quiet = quiet
+        self.tags = tags
     
     def _print(self, s):
         """Print iff the quiet flag is not set to True"""
@@ -92,10 +94,10 @@ class PageModifierBase(object):
             if newtext != self.current_page.text() and not self.prioritize_plaintext:
                 self._print('Saving page %s...' % page.name)
                 sleep(self.lag)
-                page.save(newtext, summary=self.summary)
+                page.save(newtext, summary=self.summary, tags=self.tags)
             elif self.current_text != self.current_page.text():
                 self._print('Saving page %s...' % page.name)
                 sleep(self.lag)
-                page.save(self.current_text, summary=self.summary)
+                page.save(self.current_text, summary=self.summary, tags=self.tags)
             else:
                 self._print('Skipping page %s...' % page.name)
