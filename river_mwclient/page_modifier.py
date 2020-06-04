@@ -27,7 +27,7 @@ class PageModifierBase(object):
     prioritize_wikitext = False
     
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
-                 tags=None,
+                 tags=None, skip_pages=None,
                  quiet=False, lag=0):
         """Create a PageModifier object, which can perform operations to edit the plaintext
         or wikitext of a page.
@@ -49,6 +49,7 @@ class PageModifierBase(object):
         self.limit = limit
         self.passed_startat = False if startat_page else True
         self.startat_page = startat_page
+        self.skip_pages = skip_pages if skip_pages is not None else []
         self.lag = lag
         self.quiet = quiet
         self.tags = tags
@@ -83,6 +84,9 @@ class PageModifierBase(object):
                 self.passed_startat = True
             if not self.passed_startat:
                 self._print("Skipping page %s, before startat" % page.name)
+                continue
+            if page.name in self.skip_pages:
+                self._print("Skipping page %s as requested" % page.name)
                 continue
             lmt += 1
             self.current_text = page.text()
