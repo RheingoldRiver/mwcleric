@@ -7,12 +7,6 @@ This library is basically an `mwclient` (https://github.com/mwclient/mwclient) w
 pip install -U git+git://github.com/RheingoldRiver/river_mwclient
 ```
 
-You probably also want development version of `mwclient`:
-```
-pip install -U git+git://github.com/mwclient/mwclient.git
-```
-This adds a patch I made to add methods `page.touch`, `page.append`, and `page.prepend`. If those are already in the most recent published version, tell me and I'll delete this instruction.
-
 If you're using PyCharm, press alt+F12 to open the console and you can install directly to your venv or whatever it's using that way.
 
 # Logging in
