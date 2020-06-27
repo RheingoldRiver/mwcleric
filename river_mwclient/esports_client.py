@@ -38,11 +38,11 @@ class EsportsClient(WikiClient):
         url = '{}.gamepedia.{}'.format(self.wiki, suffix)
         
         super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
+        self.cargo_client = CargoClient(self.client)
         if cache:
             self.cache = cache
         else:
-            self.cache = EsportsLookupCache(self.client)
-        self.cargo_client = CargoClient(self.client)
+            self.cache = EsportsLookupCache(self.client, cargo_client=self.cargo_client)
     
     @staticmethod
     def get_wiki(wiki):

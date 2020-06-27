@@ -5,9 +5,9 @@ from river_mwclient.errors import EsportsCacheKeyError
 
 credentials = AuthCredentials(user_file='me')
 
-site = EsportsClient('valorant', credentials=credentials)
+site = EsportsClient('lol', credentials=credentials)
 
-print(site.cache.get('Team', 't1', 'link'))
+print(site.cache.get_team_from_event_tricode('Worlds 2019 Main Event', 'SKT'))
 
 try:
     print(site.cache.get('Team', 't1', 'not_a_real_length'))
