@@ -77,5 +77,7 @@ class EsportsLookupCache(object):
         d = {}
         for item in result:
             team = item['Team']
-            d[self.get('Team', team, 'short').lower()] = self.get('Team', team, 'link')
+            short = self.get('Team', team, 'short')
+            if short is not None:
+                d[short.lower()] = self.get('Team', team, 'link')
         self.event_cache[event] = d
