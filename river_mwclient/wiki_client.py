@@ -59,6 +59,14 @@ class WikiClient(object):
         for title in titles:
             yield self.client.pages[title]
     
+    def target(self, name: str):
+        """
+        Return the name of a page's redirect target
+        :param name: Name of page
+        :return: Name of page's redirect target
+        """
+        return self.client.pages[name].resolve_redirect().name
+    
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
