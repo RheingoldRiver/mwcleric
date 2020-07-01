@@ -39,4 +39,4 @@ def time_from_template(template: Template):
     tz_local_str = template.get('timezone').value.strip()
     tz_local = tz_lookup[tz_local_str]
     date_and_time = date + " " + time
-    return WikiTime(date_and_time, tz=tz_lookup[tz_local])
+    return time_from_str(date_and_time, tz=tz_local)
