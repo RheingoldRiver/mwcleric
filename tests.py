@@ -9,6 +9,8 @@ site = EsportsClient('lol', credentials=credentials)
 
 print(site.cache.get_team_from_event_tricode('Worlds 2019 Main Event', 'SKT'))
 
+print(site.cache.get_disambiguated_player_from_event('Worlds 2019 Main Event', 'Splyce', 'Duke'))
+
 try:
     print(site.cache.get('Team', 't1', 'not_a_real_length'))
 except EsportsCacheKeyError as e:
