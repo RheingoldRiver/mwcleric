@@ -5,12 +5,12 @@ from pytz import timezone
 from .wiki_time import WikiTime
 
 
-def parse_str(timestamp: str, tz: timezone = None):
+def time_from_str(timestamp: str, tz: timezone = None):
     timestamp_parsed = dateutil.parser.parse(timestamp)
     return WikiTime(timestamp_parsed, tz=tz)
 
 
-def parse_template(template: Template):
+def time_from_template(template: Template):
     """
     Pulls date-time information encoded by a template and returns a WikiTime object.
     If date-time information is missing or incomplete, None is returned instead.
