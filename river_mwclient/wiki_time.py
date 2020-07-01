@@ -20,11 +20,11 @@ class WikiTime(object):
     cet = timezone('Europe/Berlin')
     kst = timezone('Asia/Seoul')
     
-    def __init__(self, timestamp: str, default_timezone: timezone = utc):
+    def __init__(self, timestamp: str, tz: timezone = utc):
         self.timestamp = timestamp
         timestamp_parsed = dateutil.parser.parse(timestamp)
         if timestamp_parsed.tzinfo is None:
-            timestamp_parsed = default_timezone.localize(timestamp_parsed)
+            timestamp_parsed = tz.localize(timestamp_parsed)
         self.pst_object = timestamp_parsed.astimezone(self.pst)
         self.cet_object = timestamp_parsed.astimezone(self.cet)
         self.kst_object = timestamp_parsed.astimezone(self.kst)
