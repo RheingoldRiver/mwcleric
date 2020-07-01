@@ -1,5 +1,5 @@
 from pytz import timezone, utc
-import dateutil.parser
+from datetime import datetime
 
 
 class WikiTime(object):
@@ -20,14 +20,17 @@ class WikiTime(object):
     cet = timezone('Europe/Berlin')
     kst = timezone('Asia/Seoul')
     
-    def __init__(self, timestamp: str, tz: timezone = utc):
-        self.timestamp = timestamp
-        timestamp_parsed = dateutil.parser.parse(timestamp)
-        if timestamp_parsed.tzinfo is None:
-            timestamp_parsed = tz.localize(timestamp_parsed)
-        self.pst_object = timestamp_parsed.astimezone(self.pst)
-        self.cet_object = timestamp_parsed.astimezone(self.cet)
-        self.kst_object = timestamp_parsed.astimezone(self.kst)
+    def __init__(self, timestamp: datetime, tz: timezone = utc):
+        """
+        Creates a wiki date-time object
+        :param timestamp: a datetime object
+        :param tz: optional, a timezone. if not provided, utc will be assumed.
+        """
+        if timestamp.tzinfo is None:
+            timestamp = tz.localize(timestamp)
+        self.pst_object = timestamp.astimezone(self.pst)
+        self.cet_object = timestamp.astimezone(self.cet)
+        self.kst_object = timestamp.astimezone(self.kst)
         self.pst_date = self.pst_object.strftime('%Y-%m-%d')
         self.cet_date = self.cet_object.strftime('%Y-%m-%d')
         self.kst_date = self.kst_object.strftime('%Y-%m-%d')
