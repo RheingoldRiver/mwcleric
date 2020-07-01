@@ -119,18 +119,24 @@ class EsportsLookupCache(object):
         :return: the disambiguated form of the player param
         """
         event = self.get_target(event)
-        player = player[0].upper() + player[1:]
+        
+        # we'll keep all player keys lowercase
+        player_lookup = player.lower()
         team = self.get('Team', team, 'link')
-        result = self._get_player_from_event_and_team_raw(event, team, player)
-        if result is not None:
-            return result
+        disambiguation = self._get_player_from_event_and_team_raw(event, team, player_lookup)
+        if disambiguation is not None:
+            return player + disambiguation
         self._populate_event_team_players(event)
-        return self._get_player_from_event_and_team_raw(event, team, player)
+        disambiguation = self._get_player_from_event_and_team_raw(event, team, player_lookup)
+        if disambiguation is not None:
+            return player + disambiguation
+        return None
 
-    def _get_player_from_event_and_team_raw(self, event, team, player):
+    def _get_player_from_event_and_team_raw(self, event, team, player_lookup):
         if event in self.event_playername_cache:
             if team in self.event_playername_cache[event]:
-                return self.event_playername_cache[event][team][player]
+                if player_lookup in self.event_playername_cache[event][team]:
+                    return self.event_playername_cache[event][team][player_lookup]
         return None
     
     def _populate_event_team_players(self, event):
@@ -146,5 +152,7 @@ class EsportsLookupCache(object):
             if item['Team'] not in d:
                 d[item['Team']] = {}
             team_entry = d[item['Team']]
-            team_entry[item['ID']] = item['DisambiguatedName']
+            
+            disambiguation = item['DisambiguatedName'].replace(item['ID'], '')
+            team_entry[item['ID'].lower()] = disambiguation
         self.event_playername_cache[event] = d
