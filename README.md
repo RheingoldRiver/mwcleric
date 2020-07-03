@@ -17,6 +17,8 @@ The function `login` should be your single point of entry to create an `EsportsS
 * `username_bot.txt` - your bot's user name (for the login `bot`) for example, `RiverIsABot@Python`
 * `password_bot.txt` - your bot's bot password (for the login `bot`)
 
+> Note - you may not have two accounts! That's okay; in this case, just make `username_me` and `password_me`, and don't create the `bot` credential set.
+
 These files would allow you to log in as `me` or as `bot`. Remember the username includes both your account name **and also the name of your bot password**, separated by an `@`.
 
 If you prefer, you can set environment variables called `WIKI_USERNAME_ME`, `WIKI_PASSWORD_ME`, etc. 
