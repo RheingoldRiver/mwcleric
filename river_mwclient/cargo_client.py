@@ -16,6 +16,16 @@ class CargoClient(object):
         for item in response['cargoquery']:
             ret.append(item['title'])
         return ret
+        
+    def query_one_result(self, fields, **kwargs):
+        rows = self.query(fields=fields, **kwargs)
+        field = fields.split('=')[1] if '=' in fields else fields
+        if len(rows) == 0:
+            return None
+        row = rows[0]
+        if field not in row:
+            return None
+        return row[field]
     
     def page_list(self, fields=None, limit="max", page_pattern="%s", **kwargs):
         if isinstance(fields, list):

@@ -20,3 +20,9 @@ except EsportsCacheKeyError as e:
     print(e)
 
 site.client.pages['User:RheingoldRiver/login test'].save('ki3ttens 3')
+
+print(site.cargo_client.query_one_result(
+    tables="Players",
+    fields="Name",
+    where="ID=\"Faker\"")
+)
