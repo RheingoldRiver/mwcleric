@@ -26,3 +26,10 @@ print(site.cargo_client.query_one_result(
     fields="Name",
     where="ID=\"Faker\"")
 )
+
+
+print(site.cargo_client.query_one_result(
+    tables='Tournaments',
+    where='OverviewPage="Intel Arabian Cup 2020/Egypt/Split 1"',
+    fields='ScrapeLink'
+))
