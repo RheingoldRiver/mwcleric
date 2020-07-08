@@ -40,6 +40,8 @@ class EsportsLookupCache(object):
         :return: Correct lookup value provided, or None if it's not found
         """
         file = self._get_json_lookup(filename)
+        if key is None:
+            return None
         key = key.lower()
         if key not in file:
             return None
