@@ -89,14 +89,17 @@ class EsportsLookupCache(object):
         result = self.cargo_client.query(
             tables="TournamentRosters=Ros",
             where='Ros.OverviewPage="{}"'.format(event),
-            fields="Ros.Team=Team"
+            fields="Ros.Team=Team, Ros.Short=Short"
         )
         d = {}
         for item in result:
             team = item['Team']
-            short = self.get('Team', team, 'short')
-            if short is not None:
-                d[short.lower()] = self.get('Team', team, 'link')
+            link = self.get('Team', team, 'link')
+            short = item['Short']
+            if short == '':
+                short = self.get('Team', team, 'short')
+            if short is not None and short != '':
+                d[short.lower()] = link
         self.event_tricode_cache[event] = d
     
     def get_disambiguated_player_from_event(self, event, team, player):
