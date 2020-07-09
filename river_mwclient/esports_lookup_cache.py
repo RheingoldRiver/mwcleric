@@ -7,9 +7,15 @@ from .cargo_client import CargoClient
 
 class EsportsLookupCache(object):
     def __init__(self, site: Site, cargo_client: CargoClient = None):
-        self.cache = {}
         self.site = site
         self.cargo_client = cargo_client
+        self.cache = {}
+        self.redirect_cache = {}
+        self.event_tricode_cache = {}
+        self.event_playername_cache = {}
+    
+    def clear(self):
+        self.cache = {}
         self.redirect_cache = {}
         self.event_tricode_cache = {}
         self.event_playername_cache = {}
