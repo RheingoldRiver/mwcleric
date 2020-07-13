@@ -1,4 +1,6 @@
 import json
+import re
+from unidecode import unidecode
 
 from .errors import EsportsCacheKeyError
 from .site import Site
@@ -132,7 +134,7 @@ class EsportsLookupCache(object):
         event = self.get_target(event)
         
         # we'll keep all player keys lowercase
-        player_lookup = player.lower()
+        player_lookup = unidecode(player).lower()
         team = self.get('Team', team, 'link')
         disambiguation = self._get_player_from_event_and_team_raw(event, team, player_lookup)
         if disambiguation is not None:
@@ -164,6 +166,6 @@ class EsportsLookupCache(object):
                 d[item['Team']] = {}
             team_entry = d[item['Team']]
             
-            disambiguation = item['DisambiguatedName'].replace(item['ID'], '')
-            team_entry[item['ID'].lower()] = disambiguation
+            disambiguation = re.sub(r'^' + item['ID'], '', item['DisambiguatedName'])
+            team_entry[unidecode(item['ID']).lower()] = disambiguation
         self.event_playername_cache[event] = d

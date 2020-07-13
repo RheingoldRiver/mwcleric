@@ -35,3 +35,5 @@ print(site.cargo_client.query_one_result(
     where='OverviewPage="Intel Arabian Cup 2020/Egypt/Split 1"',
     fields='ScrapeLink'
 ))
+
+print(site.cache.get_disambiguated_player_from_event('Belgian League 2020 Summer', 'Aethra Esports', 'Tuomarí'))
