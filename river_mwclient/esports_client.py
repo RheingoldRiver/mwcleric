@@ -76,33 +76,27 @@ class EsportsClient(WikiClient):
         templates = ['{}/CargoDec'.format(_) for _ in tables]
         self.cargo_client.recreate(templates, replacement=replacement)
     
-    def other_wikis(self):
+    def get_one_data_page(self, event, i):
         """
-        :return: Generator of wiki names as strings, not site objects
+        Find one data page for an event
+        :param event: Overview Page of an event
+        :param i: the ith page to return
+        :return: a Page object of a single data page
         """
-        for wiki in ALL_ESPORTS_WIKIS:
-            if wiki == self.wiki:
-                continue
-            yield wiki
+        if i == 1:
+            return self.client.pages['Data:' + event]
+        return self.client.pages['Data:{}/{}'.format(event, str(i))]
     
-    def other_sites(self):
-        for wiki in self.other_wikis():
-            yield EsportsClient(wiki)
-    
-    @staticmethod
-    def all_wikis():
-        for wiki in ALL_ESPORTS_WIKIS:
-            yield wiki
-    
-    @staticmethod
-    def all_sites():
+    def data_pages(self, event):
         """
-        Use self.all_sites_logged_in() if you want to log in; this is deliberately static
-        :return: Generator of all esports wikis as site objects
+        Find all the data pages for an event.
+        :param event: Overview Page of event
+        :return: generator of data pages
         """
-        for wiki in ALL_ESPORTS_WIKIS:
-            yield EsportsClient(wiki)
-    
-    def all_sites_logged_in(self):
-        for wiki in ALL_ESPORTS_WIKIS:
-            yield EsportsClient(wiki, username=self.client.username, password=self.client.password)
+        event = self.cache.get_target(event)
+        i = 1
+        data_page = self.get_one_data_page(event, i)
+        while data_page.exists:
+            yield data_page
+            i += 1
+            data_page = self.get_one_data_page(event, i)

@@ -37,3 +37,6 @@ print(site.cargo_client.query_one_result(
 ))
 
 print(site.cache.get_disambiguated_player_from_event('Belgian League 2020 Summer', 'Aethra Esports', 'Tuomarí'))
+
+for p in site.data_pages('LDL 2020 Summer'):
+    print(p.name)
