@@ -29,5 +29,48 @@ If you don't want to log in, you can just create an EsportsSite/GamepediaSite ob
 * Use a unique password just for your Python code that isn't also used for any other service
 * In fact you should do this for every separate application that you use a bot password in
 
+# Copyable Code
+
+```python
+from river_mwclient.esports_client import EsportsClient
+from river_mwclient.auth_credentials import AuthCredentials
+from river_mwclient.template_modifier import TemplateModifierBase
+
+credentials = AuthCredentials(user_file="me")
+site = EsportsClient('lol', credentials=credentials)
+summary = 'Bot edit'
+
+
+class TemplateModifier(TemplateModifierBase):
+	def update_template(self, template):
+		return
+
+
+TemplateModifier(site, 'TEMPLATEYOUCAREABOUT',
+				 summary=summary).run()
+```
+
+```python
+from river_mwclient.esports_client import EsportsClient
+from river_mwclient.auth_credentials import AuthCredentials
+from river_mwclient.page_modifier import PageModifierBase
+
+credentials = AuthCredentials(user_file="me")
+site = EsportsClient('lol', credentials=credentials)
+summary = 'Bot edit'
+
+
+class PageModifier(PageModifierBase):
+	def update_plaintext(self, text):
+		return text
+	
+	def update_wikitext(self, wikitext):
+		return
+
+
+PageModifier(site,
+				 summary=summary).run()
+```
+
 # Contributing
 If you want to contribute feel free to open a pull request, as long as whatever you add works, the only way I wouldn't accept is if it actively interferes with my existing code (but that does include being poorly organized etc so pls actually make it a nice change).
