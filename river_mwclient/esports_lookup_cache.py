@@ -97,9 +97,10 @@ class EsportsLookupCache(object):
     
     def _populate_event_tricodes(self, event):
         result = self.cargo_client.query(
-            tables="TournamentRosters=Ros",
+            tables="TournamentRosters=Ros,TeamRedirects=TRed,Teams",
+            join_on="Ros.Team=TRed.AllName,TRed._pageName=Teams.OverviewPage",
             where='Ros.OverviewPage="{}"'.format(event),
-            fields="Ros.Team=Team, Ros.Short=Short"
+            fields="Ros.Team=Team, COALESCE(Ros.Short,Teams.Short)=Short"
         )
         d = {}
         for item in result:
