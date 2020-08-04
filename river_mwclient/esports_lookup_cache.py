@@ -168,5 +168,8 @@ class EsportsLookupCache(object):
             team_entry = d[item['Team']]
             
             disambiguation = re.sub(r'^' + item['ID'], '', item['DisambiguatedName'])
-            team_entry[unidecode(item['ID']).lower()] = disambiguation
+            key = unidecode(item['ID']).lower()
+            if key not in team_entry or disambiguation != '':
+                team_entry[key] = disambiguation
+        print(d)
         self.event_playername_cache[event] = d
