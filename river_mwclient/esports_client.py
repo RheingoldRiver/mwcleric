@@ -3,6 +3,8 @@ from .cargo_client import CargoClient
 from .esports_lookup_cache import EsportsLookupCache
 from .site import Site
 from .wiki_client import WikiClient
+from .errors import CantFindMatchHistory
+import re
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
@@ -100,3 +102,29 @@ class EsportsClient(WikiClient):
             yield data_page
             i += 1
             data_page = self.get_one_data_page(event, i)
+    
+    def query_riot_mh(self, riot_mh):
+        match = re.search(r'match-details/(.+?)(&tab=.*)?$', riot_mh)
+        if match[1] is None:
+            raise CantFindMatchHistory
+        to_search = '%{}%'.format(match[1])
+        result = self.cargo_client.query(
+            tables="MatchScheduleGame=MSG, Tournaments=T",
+            join_on="MSG.OverviewPage=T.OverviewPage",
+            fields="T.StandardName=Event, MSG.Blue=Blue, MSG.Red=Red",
+            where="MSG.MatchHistory LIKE\"{}\"".format(to_search)
+        )
+        if len(result) == 0:
+            raise CantFindMatchHistory
+        return result[0]
+    
+    def query_qq_mh(self, qq_id):
+        result = self.cargo_client.query(
+            tables="MatchSchedule=MS, Tournaments=T",
+            join_on="MS.OverviewPage=T.OverviewPage",
+            fields="MS.Patch=Patch, T.StandardName=Event",
+            where="MS.QQ=\"{}\"".format(qq_id)
+        )
+        if len(result) == 0:
+            raise CantFindMatchHistory
+        return result[0]
