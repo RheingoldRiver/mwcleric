@@ -171,5 +171,4 @@ class EsportsLookupCache(object):
             key = unidecode(item['ID']).lower()
             if key not in team_entry or disambiguation != '':
                 team_entry[key] = disambiguation
-        print(d)
         self.event_playername_cache[event] = d
