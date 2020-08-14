@@ -109,9 +109,9 @@ class EsportsClient(WikiClient):
             raise CantFindMatchHistory
         to_search = '%{}%'.format(match[1])
         result = self.cargo_client.query(
-            tables="MatchScheduleGame=MSG, Tournaments=T",
-            join_on="MSG.OverviewPage=T.OverviewPage",
-            fields="T.StandardName=Event, MSG.Blue=Blue, MSG.Red=Red",
+            tables="MatchScheduleGame=MSG, Tournaments=T, MatchSchedule=MS",
+            join_on="MSG.OverviewPage=T.OverviewPage, MSG.UniqueMatch=MS.UniqueMatch",
+            fields="T.StandardName=Event, MSG.Blue=Blue, MSG.Red=Red,MS.Patch=Patch",
             where="MSG.MatchHistory LIKE\"{}\"".format(to_search)
         )
         if len(result) == 0:
