@@ -38,13 +38,14 @@ class EsportsLookupCache(object):
         self.cache[filename] = json.loads(result['expandtemplates']['wikitext'])
         return self.cache[filename]
     
-    def get(self, filename, key, length):
+    def get(self, filename, key, length, fallback=False):
         """
         Returrns the length of the lookup of a key requested from the filename requested. Assumes the file has
         the same structure as the -names modules on Leaguepedia.
         :param filename: "Champion", "Role", etc. - the name of the file
         :param key: The lookup key, e.g. "Morde"
         :param length: The length of value to return, e.g. "long" or "link"
+        :param fallback: Whether or not to fallback to returning the key if it's missing in the lookup
         :return: Correct lookup value provided, or None if it's not found
         """
         file = self._get_json_lookup(filename)
@@ -52,6 +53,8 @@ class EsportsLookupCache(object):
             return None
         key = key.lower()
         if key not in file:
+            if fallback:
+                return key
             return None
         value_table = file[key]
         if isinstance(value_table, str):
@@ -105,7 +108,7 @@ class EsportsLookupCache(object):
         d = {}
         for item in result:
             team = item['Team']
-            link = self.get('Team', team, 'link') or team
+            link = self.get('Team', team, 'link', fallback=True)
             short = item['Short']
             if short == '':
                 short = self.get('Team', team, 'short')
@@ -136,7 +139,7 @@ class EsportsLookupCache(object):
         
         # we'll keep all player keys lowercase
         player_lookup = unidecode(player).lower()
-        team = self.get('Team', team, 'link')
+        team = self.get('Team', team, 'link', fallback=True)
         disambiguation = self._get_player_from_event_and_team_raw(event, team, player_lookup)
         if disambiguation is not None:
             return player + disambiguation
