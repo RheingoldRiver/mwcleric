@@ -105,7 +105,7 @@ class EsportsLookupCache(object):
         d = {}
         for item in result:
             team = item['Team']
-            link = self.get('Team', team, 'link')
+            link = self.get('Team', team, 'link') or team
             short = item['Short']
             if short == '':
                 short = self.get('Team', team, 'short')
