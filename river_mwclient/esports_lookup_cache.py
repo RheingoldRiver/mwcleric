@@ -129,6 +129,10 @@ class EsportsLookupCache(object):
         the player has ever had, so that future requests in the same session can use other IDs.
         The current request will use the ID requested by the current function call.
         
+        This method has a failure chance if two players on the same team historically shared an ID
+        We could attempt to mitigate this failure chance by checking position
+        TODO: Add support for low-priority disambiguation table, this will also mitigate this possibility
+        
         teams are themselves listed within tournaments
         :param event: will be resolved as a redirect if needed
         :param team: can be a tricode if needed

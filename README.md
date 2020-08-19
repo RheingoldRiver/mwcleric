@@ -29,10 +29,11 @@ If you don't want to log in, you can just create an EsportsSite/GamepediaSite ob
 * Use a unique password just for your Python code that isn't also used for any other service
 * In fact you should do this for every separate application that you use a bot password in
 
-# Copyable Code
-For people wanting to edit wikis, these are the two things most likely to make your life easier.
+# Editing
+For people wanting to edit wikis, these are the two things most likely to make your life easier. To use `PageModifier` and `TemplateModifier`, you subclass them and then overwrite methods to modify the page or template as needed, then instantiate the subclass and run. 
 
-For `PageModifier`, you probably want *either* `updage_plaintext` *or* `update_wikitext`, not both. 
+For `PageModifier`, you probably want *either* `updage_plaintext` *or* `update_wikitext`, not both.
+## Copyable code 
 ```python
 from river_mwclient.esports_client import EsportsClient
 from river_mwclient.auth_credentials import AuthCredentials
