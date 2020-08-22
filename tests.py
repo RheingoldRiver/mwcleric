@@ -31,3 +31,7 @@ assert sum(1 for _ in site.data_pages('LDL 2020 Summer')) == 11
 
 # check a team without a teamnames entry
 assert site.cache.get_team_from_event_tricode('Ultraliga Season 5 Promotion', 'Soon') == 'soon to be named'
+
+# check a low-priority redirect player
+assert site.cache.get_disambiguated_player_from_event(
+    'LCS 2020 Summer', 'FLY', 'Solo') == 'Solo (Colin Earnest)'
