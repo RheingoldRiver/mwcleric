@@ -47,6 +47,7 @@ class EsportsLookupCache(object):
         :param length: The length of value to return, e.g. "long" or "link"
         :param allow_fallback: Whether or not to fallback to returning the key if it's missing in the lookup
         :return: Correct lookup value provided, or None if it's not found
+        :return: Correct lookup value provided, or None if it's not found
         """
         file = self._get_json_lookup(filename)
         if key is None:

@@ -9,6 +9,9 @@ credentials = AuthCredentials(user_file='me')
 site = EsportsClient('lol', credentials=credentials)
 
 
+for ns in site.namespaces:
+    print(ns.name)
+
 assert site.cache.get_disambiguated_player_from_event(
     'El_Nexo/2020_Season/Split_1_Playoffs', 'Movistar Riders Academy', 'Marky'
 ) == 'Marky (Pedro José Serrano)'

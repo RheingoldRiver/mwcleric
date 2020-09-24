@@ -5,6 +5,7 @@ from .session_manager import session_manager
 from .site import Site
 from .wiki_content_error import WikiContentError
 from .wiki_script_error import WikiScriptError
+from .namespace import Namespace
 
 
 class WikiClient(object):
@@ -20,11 +21,31 @@ class WikiClient(object):
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None, **kwargs):
         self.url = url
         self.errors = []
+        self._namespaces = None
         if client:
             self.client = client
             return
         
         self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
+    
+    @property
+    def namespaces(self):
+        if self._namespaces is not None:
+            return self._namespaces
+        result = self.client.api('query', meta='siteinfo', siprop="namespaces|namespacealiases")
+        ns_aliases = {}
+        for alias in result['query']['namespacealiases']:
+            alias_key = str(alias['id'])
+            if alias_key not in ns_aliases:
+                ns_aliases[alias_key] = []
+            ns_aliases[alias_key].append(alias['*'])
+        ret = []
+        for ns_str, ns_data in result['query']['namespaces'].items():
+            ns = int(ns_str)
+            ret.append(Namespace(id_number=ns, name=ns_data['*'],
+                                 canonical_name=ns_data.get('canonical'), aliases=ns_aliases.get(ns_str)))
+        self._namespaces = ret
+        return ret
     
     def pages_using(self, template, **kwargs):
         if ':' not in template:
