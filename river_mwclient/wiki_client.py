@@ -1,4 +1,6 @@
 import datetime
+from mwclient.page import Page
+from mwclient.errors import AssertUserFailedError
 
 from .auth_credentials import AuthCredentials
 from .session_manager import session_manager
@@ -31,8 +33,34 @@ class WikiClient(object):
         
     def login(self):
         if self.credentials is None:
-            return 
+            return
         self.client.login(username=self.credentials.username, password=self.credentials.password)
+        
+    def save_page_with_retry_login(self, page: Page, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
+        """
+        Performs a page edit, retrying the login once if the edit fails due to the user being logged out
+        
+        This function hopefully makes it easy to workaround the lag and frequent login timeouts
+        experienced on the Fandom UCP platform compared to Gamepedia Hydra.
+        
+        :param page: mwclient Page object
+        :param text: as in mwclient.Page.edit
+        :param summary: as in mwclient.Page.edit
+        :param minor: as in mwclient.Page.edit
+        :param bot: as in mwclient.Page.edit
+        :param section: as in mwclient.Page.edit
+        :param kwargs: as in mwclient.Page.edit
+        :return: nothing
+        """
+        try:
+            page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+        except AssertUserFailedError:
+            self.login()
+            page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+    
+    def save_title_with_retry_login(self, title, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
+        page = self.client.pages[title]
+        self.save_page_with_retry_login(page, text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
     
     @property
     def namespaces(self):
