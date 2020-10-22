@@ -22,11 +22,17 @@ class WikiClient(object):
         self.url = url
         self.errors = []
         self._namespaces = None
+        self.credentials = credentials
         if client:
             self.client = client
             return
         
         self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
+        
+    def login(self):
+        if self.credentials is None:
+            return 
+        self.client.login(username=self.credentials.username, password=self.credentials.password)
     
     @property
     def namespaces(self):
