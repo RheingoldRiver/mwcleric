@@ -164,7 +164,7 @@ class EsportsLookupCache(object):
     def _populate_event_team_players(self, event):
         result = self.cargo_client.query(
             tables="TournamentPlayers=TP,PlayerRedirects=PR1,PlayerRedirects=PR2,LowPriorityRedirects=LPR",
-            join_on="TP.Player=PR1.AllName,PR1.OverviewPage=PR2.OverviewPage,PR2._pageName=LPR._pageName",
+            join_on="TP.Player=PR1.AllName,PR1.OverviewPage=PR2.OverviewPage,PR2.AllName=LPR._pageName",
             where="TP.OverviewPage=\"{}\" AND LPR.IsLowPriority IS NULL".format(event),
             fields="TP.Team=Team,PR2.AllName=DisambiguatedName,PR2.ID=ID",
             limit='max'
