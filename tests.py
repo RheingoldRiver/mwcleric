@@ -8,7 +8,6 @@ credentials = AuthCredentials(user_file='me')
 
 site = EsportsClient('lol', credentials=credentials)
 
-
 for ns in site.namespaces:
     print(ns.name)
 

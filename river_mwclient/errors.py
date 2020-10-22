@@ -30,3 +30,7 @@ class InvalidUserFile(KeyError):
 class CantFindMatchHistory(KeyError):
     def __str__(self):
         return "Cannot find any valid tournament for provided match history. It may be missing from the MatchSchedule data, or there may be an issue with the parser."
+
+
+class PatrolRevisionNotSpecified(KeyError):
+    pass
