@@ -1,3 +1,6 @@
+from mwclient.errors import AssertUserFailedError
+
+
 class EsportsCacheKeyError(KeyError):
     def __init__(self, file, value, length, value_table):
         self.file = file
@@ -34,3 +37,11 @@ class CantFindMatchHistory(KeyError):
 
 class PatrolRevisionNotSpecified(KeyError):
     pass
+
+
+class RetiedLoginAndStillFailed(AssertUserFailedError):
+    def __init__(self, action):
+        self.action = action
+        
+    def __str__(self):
+        return "Tried to re-login but still failed. Attempted action: {}".format(self.action)

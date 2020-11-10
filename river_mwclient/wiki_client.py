@@ -10,6 +10,7 @@ from .wiki_content_error import WikiContentError
 from .wiki_script_error import WikiScriptError
 from .namespace import Namespace
 from .errors import PatrolRevisionNotSpecified
+from .errors import RetiedLoginAndStillFailed
 
 
 class WikiClient(object):
@@ -37,8 +38,7 @@ class WikiClient(object):
         if self.credentials is None:
             return
         self.client.login(username=self.credentials.username, password=self.credentials.password)
-        
-    
+
     @property
     def namespaces(self):
         if self._namespaces is not None:
@@ -158,11 +158,21 @@ class WikiClient(object):
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except AssertUserFailedError:
             self.login()
-            page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+            try:
+                page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+            except AssertUserFailedError:
+                raise RetiedLoginAndStillFailed('edit')
+
+    def save_title_with_retry_login(self, title: str, text, summary, minor=False, bot=True, section=None, **kwargs):
+        self.save_with_retry_login(self.client.pages[title], text,
+                                   summary=summary, minor=minor, bot=bot, section=section, **kwargs)
 
     def patrol_with_retry_login(self, revid=None, rcid=None, **kwargs):
         try:
             self.patrol(revid=revid, rcid=rcid, **kwargs)
         except APIError:
             self.login()
-            self.patrol(revid=revid, rcid=rcid, **kwargs)
+            try:
+                self.patrol(revid=revid, rcid=rcid, **kwargs)
+            except APIError:
+                raise RetiedLoginAndStillFailed('patrol')
