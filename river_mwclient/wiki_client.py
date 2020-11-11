@@ -33,11 +33,18 @@ class WikiClient(object):
             return
         
         self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
-        
+
     def login(self):
         if self.credentials is None:
             return
         self.client.login(username=self.credentials.username, password=self.credentials.password)
+
+    def relog(self):
+        try:
+            self.client.api('logout', self.client.get_token('csrf'))
+        except APIError:
+            pass
+        self.login()
 
     @property
     def namespaces(self):
@@ -139,7 +146,7 @@ class WikiClient(object):
         try:
             self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
         except APIError:
-            self.login()
+            self.relog()
             try:
                 self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
             except APIError:
@@ -164,12 +171,12 @@ class WikiClient(object):
         try:
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except AssertUserFailedError:
-            self.login()
+            self.relog()
             try:
                 page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
             except AssertUserFailedError:
                 raise RetiedLoginAndStillFailed('edit')
 
-    def save_tile(self, title: str, text, summary, minor=False, bot=True, section=None, **kwargs):
+    def save_tile(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
                   summary=summary, minor=minor, bot=bot, section=section, **kwargs)
