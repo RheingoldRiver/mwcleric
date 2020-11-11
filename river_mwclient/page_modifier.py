@@ -98,10 +98,10 @@ class PageModifierBase(object):
             if newtext != self.current_page.text() and not self.prioritize_plaintext:
                 self._print('Saving page %s...' % page.name)
                 sleep(self.lag)
-                page.save(newtext, summary=self.summary, tags=self.tags)
+                self.site.save(page, newtext, summary=self.summary, tags=self.tags)
             elif self.current_text != self.current_page.text():
                 self._print('Saving page %s...' % page.name)
                 sleep(self.lag)
-                page.save(self.current_text, summary=self.summary, tags=self.tags)
+                self.site.save(page, self.current_text, summary=self.summary, tags=self.tags)
             else:
                 self._print('Skipping page %s...' % page.name)

@@ -136,9 +136,16 @@ class WikiClient(object):
         if revid is None and rcid is None:
             raise PatrolRevisionNotSpecified
         patrol_token = self.client.get_token('patrol')
-        self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
+        try:
+            self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
+        except APIError:
+            self.login()
+            try:
+                self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
+            except APIError:
+                raise RetiedLoginAndStillFailed('patrol')
 
-    def save_with_retry_login(self, page: Page, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
+    def save(self, page: Page, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
         """
         Performs a page edit, retrying the login once if the edit fails due to the user being logged out
         
@@ -163,16 +170,6 @@ class WikiClient(object):
             except AssertUserFailedError:
                 raise RetiedLoginAndStillFailed('edit')
 
-    def save_title_with_retry_login(self, title: str, text, summary, minor=False, bot=True, section=None, **kwargs):
-        self.save_with_retry_login(self.client.pages[title], text,
-                                   summary=summary, minor=minor, bot=bot, section=section, **kwargs)
-
-    def patrol_with_retry_login(self, revid=None, rcid=None, **kwargs):
-        try:
-            self.patrol(revid=revid, rcid=rcid, **kwargs)
-        except APIError:
-            self.login()
-            try:
-                self.patrol(revid=revid, rcid=rcid, **kwargs)
-            except APIError:
-                raise RetiedLoginAndStillFailed('patrol')
+    def save_tile(self, title: str, text, summary, minor=False, bot=True, section=None, **kwargs):
+        self.save(self.client.pages[title], text,
+                  summary=summary, minor=minor, bot=bot, section=section, **kwargs)

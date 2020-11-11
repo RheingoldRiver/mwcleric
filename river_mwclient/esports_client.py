@@ -59,11 +59,12 @@ class EsportsClient(WikiClient):
         for table in tables:
             tl_page = self.client.pages['Template:{}/CargoDec'.format(table)]
             doc_page = self.client.pages['Template:{}/CargoDec/doc'.format(table)]
-            tl_page.save(
+            self.save(
+                tl_page,
                 '{{Declare|doc={{{1|}}}}}<noinclude>{{documentation}}</noinclude>',
                 summary=summary
             )
-            doc_page.save('{{Cargodoc}}', summary=summary)
+            self.save(doc_page, '{{Cargodoc}}', summary=summary)
             tl_page.touch()
         self.create_tables(tables)
         for table in tables:
