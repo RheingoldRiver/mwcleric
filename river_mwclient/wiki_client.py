@@ -48,7 +48,8 @@ class WikiClient(object):
         """
         # The session manager will log in for us too
         self.client = session_manager.get_client(url=self.url, path=self.path,
-                                                 credentials=self.credentials, **self.kwargs)
+                                                 credentials=self.credentials, **self.kwargs,
+                                                 force_new=True)
 
     @property
     def namespaces(self):
