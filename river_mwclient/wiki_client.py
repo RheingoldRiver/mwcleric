@@ -28,6 +28,8 @@ class WikiClient(object):
         self.errors = []
         self._namespaces = None
         self.credentials = credentials
+        self.path = path
+        self.kwargs = kwargs
         if client:
             self.client = client
             return
@@ -40,11 +42,13 @@ class WikiClient(object):
         self.client.login(username=self.credentials.username, password=self.credentials.password)
 
     def relog(self):
-        try:
-            self.client.api('logout', self.client.get_token('csrf'))
-        except APIError:
-            pass
-        self.login()
+        """
+        Completely discards pre-existing session and creates a new site object
+        :return:
+        """
+        # The session manager will log in for us too
+        self.client = session_manager.get_client(url=self.url, path=self.path,
+                                                 credentials=self.credentials, **self.kwargs)
 
     @property
     def namespaces(self):
