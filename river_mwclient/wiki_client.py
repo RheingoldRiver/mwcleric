@@ -197,6 +197,8 @@ class WikiClient(object):
             time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
                 f(**kwargs)
+                print('HI I RECOVERED FROM AN API ERROR!!!!!!!!!!!!!')
+                print(str(retry))
                 was_successful = True
             except AssertUserFailedError:
                 continue
