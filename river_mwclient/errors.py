@@ -39,7 +39,7 @@ class PatrolRevisionNotSpecified(KeyError):
     pass
 
 
-class RetiedLoginAndStillFailed(AssertUserFailedError):
+class RetriedLoginAndStillFailed(AssertUserFailedError):
     def __init__(self, action):
         self.action = action
         

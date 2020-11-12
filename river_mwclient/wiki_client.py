@@ -10,7 +10,7 @@ from .wiki_content_error import WikiContentError
 from .wiki_script_error import WikiScriptError
 from .namespace import Namespace
 from .errors import PatrolRevisionNotSpecified
-from .errors import RetiedLoginAndStillFailed
+from .errors import RetriedLoginAndStillFailed
 
 
 class WikiClient(object):
@@ -155,7 +155,7 @@ class WikiClient(object):
             try:
                 self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
             except APIError:
-                raise RetiedLoginAndStillFailed('patrol')
+                raise RetriedLoginAndStillFailed('patrol')
 
     def save(self, page: Page, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
         """
@@ -180,7 +180,7 @@ class WikiClient(object):
             try:
                 page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
             except AssertUserFailedError:
-                raise RetiedLoginAndStillFailed('edit')
+                raise RetriedLoginAndStillFailed('edit')
 
     def save_tile(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
