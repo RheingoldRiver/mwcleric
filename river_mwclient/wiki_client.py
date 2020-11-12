@@ -25,7 +25,7 @@ class WikiClient(object):
     url = None
     client = None
     write_errors = (AssertUserFailedError, ReadTimeout)
-    
+
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
                  max_retries=3, retry_interval=10, **kwargs):
         self.url = url
@@ -39,7 +39,7 @@ class WikiClient(object):
         if client:
             self.client = client
             return
-        
+
         self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
 
     def login(self):
@@ -75,7 +75,7 @@ class WikiClient(object):
                                  canonical_name=ns_data.get('canonical'), aliases=ns_aliases.get(ns_str)))
         self._namespaces = ret
         return ret
-    
+
     def pages_using(self, template, **kwargs):
         if ':' not in template:
             title = 'Template:' + template
@@ -84,7 +84,7 @@ class WikiClient(object):
         else:
             title = template
         return self.client.pages[title].embeddedin(**kwargs)
-    
+
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled', **kwargs):
         now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
@@ -97,18 +97,18 @@ class WikiClient(object):
             **kwargs
         )
         return result
-    
+
     def recent_titles_by_interval(self, *args, **kwargs):
         revisions = self.recentchanges_by_interval(*args, **kwargs, toponly=0)
         titles = [_['title'] for _ in revisions]
         return titles
-    
+
     def recent_pages_by_interval(self, *args, **kwargs):
         revisions = self.recent_titles_by_interval(*args, **kwargs)
         titles = [_['title'] for _ in revisions]
         for title in titles:
             yield self.client.pages[title]
-    
+
     def target(self, name: str):
         """
         Return the name of a page's redirect target
@@ -116,7 +116,7 @@ class WikiClient(object):
         :return: Name of page's redirect target
         """
         return self.client.pages[name].resolve_redirect().name
-    
+
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
@@ -132,13 +132,13 @@ class WikiClient(object):
                                **kwargs
                                )
         return logs['query']['logevents']
-    
+
     def log_error_script(self, title: str = None, error: Exception = None):
         self.errors.append(WikiScriptError(title, error))
-    
+
     def log_error_content(self, title: str = None, text: str = None):
         self.errors.append(WikiContentError(title, error=text))
-    
+
     def report_all_errors(self, error_title):
         if not self.errors:
             return
@@ -146,7 +146,7 @@ class WikiClient(object):
         errors = [_.format_for_print() for _ in self.errors]
         error_text = '<br>\n'.join(errors)
         error_page.append('\n' + error_text)
-        
+
         # reset the list so we can reuse later if needed
         self.errors = []
 
@@ -187,23 +187,21 @@ class WikiClient(object):
 
     @staticmethod
     def _retry_save(**kwargs):
-        print(kwargs)
-        kwargs['page'].edit(kwargs['text'], summary=kwargs.get('summary'),
-                            minor=kwargs.get('minor'), bot=kwargs.get('bot'),
-                            section=kwargs.get('section'), **kwargs)
+        page = kwargs.pop('page')
+        text = kwargs.pop('text')
+        page.edit(text, **kwargs)
 
     def _retry_login(self, f, failure_type, **kwargs):
         was_successful = False
         for retry in range(self.max_retries):
             self.relog()
             # don't sleep at all the first retry, and then increment in retry_interval intervals
-            # default interval is 10, defauly retries is 3
+            # default interval is 10, default retries is 3
             time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
                 f(**kwargs)
-                print('HI I RECOVERED FROM AN API ERROR!!!!!!!!!!!!!')
-                print(str(retry))
                 was_successful = True
+                break
             except self.write_errors:
                 continue
         if not was_successful:
