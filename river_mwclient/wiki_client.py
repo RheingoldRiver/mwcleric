@@ -187,9 +187,10 @@ class WikiClient(object):
 
     @staticmethod
     def _retry_save(**kwargs):
-        kwargs['page'].edit(kwargs['text'], summary=kwargs['summary'],
-                            minor=kwargs['minor'], bot=kwargs['bot'],
-                            section=kwargs['section'], **kwargs)
+        print(kwargs)
+        kwargs['page'].edit(kwargs['text'], summary=kwargs.get('summary'),
+                            minor=kwargs.get('minor'), bot=kwargs.get('bot'),
+                            section=kwargs.get('section'), **kwargs)
 
     def _retry_login(self, f, failure_type, **kwargs):
         was_successful = False
