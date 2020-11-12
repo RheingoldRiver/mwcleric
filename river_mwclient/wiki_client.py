@@ -3,6 +3,7 @@ import time
 from mwclient.page import Page
 from mwclient.errors import AssertUserFailedError
 from mwclient.errors import APIError
+from requests.exceptions import ReadTimeout
 
 from .auth_credentials import AuthCredentials
 from .session_manager import session_manager
@@ -23,6 +24,7 @@ class WikiClient(object):
     """
     url = None
     client = None
+    write_errors = (AssertUserFailedError, ReadTimeout)
     
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
                  max_retries=3, retry_interval=10, **kwargs):
@@ -179,7 +181,7 @@ class WikiClient(object):
         """
         try:
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
-        except AssertUserFailedError:
+        except self.write_errors:
             self._retry_login(self._retry_save(), 'edit')
 
     @staticmethod
@@ -200,7 +202,7 @@ class WikiClient(object):
                 print('HI I RECOVERED FROM AN API ERROR!!!!!!!!!!!!!')
                 print(str(retry))
                 was_successful = True
-            except AssertUserFailedError:
+            except self.write_errors:
                 continue
         if not was_successful:
             raise RetriedLoginAndStillFailed(failure_type)
