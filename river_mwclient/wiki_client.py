@@ -182,7 +182,7 @@ class WikiClient(object):
         try:
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except self.write_errors:
-            self._retry_login(self._retry_save, 'edit', page=page, summary=summary, minor=minor,
+            self._retry_login(self._retry_save, 'edit', page=page, text=text, summary=summary, minor=minor,
                               bot=bot, section=section, **kwargs)
 
     @staticmethod
