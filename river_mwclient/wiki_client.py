@@ -1,4 +1,5 @@
 import datetime
+import time
 from mwclient.page import Page
 from mwclient.errors import AssertUserFailedError
 from mwclient.errors import APIError
@@ -23,13 +24,16 @@ class WikiClient(object):
     url = None
     client = None
     
-    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None, **kwargs):
+    def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
+                 max_retries=3, retry_interval=10, **kwargs):
         self.url = url
         self.errors = []
         self._namespaces = None
         self.credentials = credentials
         self.path = path
         self.kwargs = kwargs
+        self.max_retries = max_retries
+        self.retry_interval = retry_interval
         if client:
             self.client = client
             return
@@ -176,11 +180,28 @@ class WikiClient(object):
         try:
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except AssertUserFailedError:
+            self._retry_login(self._retry_save(), 'edit')
+
+    @staticmethod
+    def _retry_save(**kwargs):
+        kwargs['page'].edit(kwargs['text'], summary=kwargs['summary'],
+                            minor=kwargs['minor'], bot=kwargs['bot'],
+                            section=kwargs['section'], **kwargs)
+
+    def _retry_login(self, f, failure_type, **kwargs):
+        was_successful = False
+        for retry in range(self.max_retries):
             self.relog()
+            # don't sleep at all the first retry, and then increment in retry_interval intervals
+            # default interval is 10, defauly retries is 3
+            time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
-                page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+                f(**kwargs)
+                was_successful = True
             except AssertUserFailedError:
-                raise RetriedLoginAndStillFailed('edit')
+                continue
+        if not was_successful:
+            raise RetriedLoginAndStillFailed(failure_type)
 
     def save_tile(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
