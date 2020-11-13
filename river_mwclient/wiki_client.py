@@ -182,16 +182,17 @@ class WikiClient(object):
         try:
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except self.write_errors:
-            self._retry_login(self._retry_save, 'edit', page=page, text=text, summary=summary, minor=minor,
-                              bot=bot, section=section, **kwargs)
+            self._retry_login_action(self._retry_save, 'edit', page=page, text=text, summary=summary, minor=minor,
+                                     bot=bot, section=section, **kwargs)
 
-    @staticmethod
-    def _retry_save(**kwargs):
-        page = kwargs.pop('page')
+    def _retry_save(self, **kwargs):
+        old_page: Page = kwargs.pop('page')
+        # recreate the page object so that we're using the new site object, post-relog
+        page = self.client.pages[old_page.name]
         text = kwargs.pop('text')
         page.edit(text, **kwargs)
 
-    def _retry_login(self, f, failure_type, **kwargs):
+    def _retry_login_action(self, f, failure_type, **kwargs):
         was_successful = False
         for retry in range(self.max_retries):
             self.relog()
@@ -199,7 +200,7 @@ class WikiClient(object):
             # default interval is 10, default retries is 3
             time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
-                f(**kwargs)
+                f(self, **kwargs)
                 was_successful = True
                 break
             except self.write_errors:
