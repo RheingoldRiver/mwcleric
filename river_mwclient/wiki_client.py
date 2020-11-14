@@ -13,6 +13,7 @@ from .wiki_script_error import WikiScriptError
 from .namespace import Namespace
 from .errors import PatrolRevisionNotSpecified
 from .errors import RetriedLoginAndStillFailed
+from .errors import PatrolRevisionInvalid
 
 
 class WikiClient(object):
@@ -24,7 +25,7 @@ class WikiClient(object):
     """
     url = None
     client = None
-    write_errors = (AssertUserFailedError, ReadTimeout)
+    write_errors = (AssertUserFailedError, ReadTimeout, APIError)
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
                  max_retries=3, retry_interval=10, **kwargs):
@@ -156,12 +157,20 @@ class WikiClient(object):
         patrol_token = self.client.get_token('patrol')
         try:
             self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
-        except APIError:
-            self.relog()
-            try:
-                self.client.api('patrol', revid=revid, rcid=rcid, **kwargs, token=patrol_token)
-            except APIError:
-                raise RetriedLoginAndStillFailed('patrol')
+        except APIError as e:
+            if e.code == 'nosuchrevid' or e.code == 'nosuchrcid':
+                raise PatrolRevisionInvalid
+            self._retry_login_action(self._retry_patrol, 'patrol',
+                                     revid=revid, rcid=rcid, token=patrol_token, **kwargs)
+
+    def _retry_patrol(self, **kwargs):
+        # one of these two must be provided but not both
+        revid = kwargs.pop('revid') if 'revid' in kwargs else None
+        rcid = kwargs.pop('rcid') if 'rcid' in kwargs else None
+
+        # token is mandatory
+        token = kwargs.pop('token')
+        self.client.api('patrol', revid=revid, rcid=rcid, token=token, **kwargs)
 
     def save(self, page: Page, text, summary=u'', minor=False, bot=True, section=None, **kwargs):
         """
@@ -200,6 +209,7 @@ class WikiClient(object):
             # default interval is 10, default retries is 3
             time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
+                print(str(retry))
                 f(**kwargs)
                 was_successful = True
                 break
