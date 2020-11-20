@@ -129,3 +129,14 @@ class EsportsClient(WikiClient):
         if len(result) == 0:
             raise CantFindMatchHistory
         return result[0]
+
+    def query_wp_mh(self, wp_id):
+        result = self.cargo_client.query(
+            tables="MatchSchedule=MS, Tournaments=T",
+            join_on="MS.OverviewPage=T.OverviewPage",
+            fields="MS.Patch=Patch, T.StandardName=Event",
+            where="MS.WanplusId=\"{}\"".format(wp_id)
+        )
+        if len(result) == 0:
+            raise CantFindMatchHistory
+        return result[0]
