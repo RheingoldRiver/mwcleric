@@ -201,6 +201,40 @@ class WikiClient(object):
         text = kwargs.pop('text')
         page.edit(text, **kwargs)
 
+    def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
+             move_subpages=False, ignore_warnings=False):
+        try:
+            page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect,
+                      move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+        except APIError as e:
+            if e.code == 'badtoken':
+                self._retry_login_action(self._retry_move, 'move', page=page, new_title=new_title,
+                                         reason=reason, move_talk=move_talk, no_redirect=no_redirect,
+                                         move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+            else:
+                raise e
+
+    def _retry_move(self, **kwargs):
+        old_page: Page = kwargs.pop('page')
+        page = self.client.pages[old_page.name]
+        new_title = kwargs.pop('new_title')
+        page.move(new_title, **kwargs)
+
+    def delete(self, page: Page, reason='', watch=False, unwatch=False, oldimage=False):
+        try:
+            page.delete(reason=reason, watch=watch, unwatch=unwatch, oldimage=oldimage)
+        except APIError as e:
+            if e.code == 'badtoken':
+                self._retry_login_action(self._retry_delete, 'delete', page=page, reason=reason,
+                                         watch=watch, unwatch=unwatch, oldimage=oldimage)
+            else:
+                raise e
+
+    def _retry_delete(self, **kwargs):
+        old_page: Page = kwargs.pop('page')
+        page = self.client.pages[old_page.name]
+        page.delete(**kwargs)
+
     def _retry_login_action(self, f, failure_type, **kwargs):
         was_successful = False
         for retry in range(self.max_retries):
