@@ -243,7 +243,6 @@ class WikiClient(object):
             # default interval is 10, default retries is 3
             time.sleep((2 ** retry - 1) * self.retry_interval)
             try:
-                print(str(retry))
                 f(**kwargs)
                 was_successful = True
                 break
