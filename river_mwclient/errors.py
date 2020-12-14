@@ -44,8 +44,10 @@ class PatrolRevisionInvalid(KeyError):
 
 
 class RetriedLoginAndStillFailed(AssertUserFailedError):
-    def __init__(self, action):
+    def __init__(self, action, codes):
         self.action = action
+        self.codes = codes
         
     def __str__(self):
-        return "Tried to re-login but still failed. Attempted action: {}".format(self.action)
+        return "Tried to re-login but still failed. Attempted action: {}, codes: {}".format(
+            self.action, ', '.join(self.codes))

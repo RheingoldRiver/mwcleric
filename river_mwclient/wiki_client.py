@@ -237,6 +237,7 @@ class WikiClient(object):
 
     def _retry_login_action(self, f, failure_type, **kwargs):
         was_successful = False
+        codes = []
         for retry in range(self.max_retries):
             self.relog()
             # don't sleep at all the first retry, and then increment in retry_interval intervals
@@ -246,10 +247,11 @@ class WikiClient(object):
                 f(**kwargs)
                 was_successful = True
                 break
-            except self.write_errors:
+            except self.write_errors as e:
+                codes.append(e.code)
                 continue
         if not was_successful:
-            raise RetriedLoginAndStillFailed(failure_type)
+            raise RetriedLoginAndStillFailed(failure_type, codes)
 
     def save_tile(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
