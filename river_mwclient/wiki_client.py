@@ -189,6 +189,7 @@ class WikiClient(object):
         :return: nothing
         """
         try:
+            page.site = self.client
             page.edit(text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
         except self.write_errors:
             self._retry_login_action(self._retry_save, 'edit', page=page, text=text, summary=summary, minor=minor,
@@ -201,9 +202,22 @@ class WikiClient(object):
         text = kwargs.pop('text')
         page.edit(text, **kwargs)
 
+    def touch(self, page: Page):
+        try:
+            page.site = self.client
+            page.touch()
+        except self.write_errors:
+            self._retry_login_action(self._retry_touch, 'touch', page=page)
+
+    def _retry_touch(self, **kwargs):
+        old_page = kwargs['page']
+        page = self.client.pages[old_page.name]
+        page.touch()
+
     def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
              move_subpages=False, ignore_warnings=False):
         try:
+            page.site = self.client
             page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect,
                       move_subpages=move_subpages, ignore_warnings=ignore_warnings)
         except APIError as e:
@@ -222,6 +236,7 @@ class WikiClient(object):
 
     def delete(self, page: Page, reason='', watch=False, unwatch=False, oldimage=False):
         try:
+            page.site = self.client
             page.delete(reason=reason, watch=watch, unwatch=unwatch, oldimage=oldimage)
         except APIError as e:
             if e.code == 'badtoken':
