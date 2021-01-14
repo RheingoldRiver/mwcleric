@@ -263,7 +263,8 @@ class WikiClient(object):
                 was_successful = True
                 break
             except self.write_errors as e:
-                codes.append(e.code)
+                if isinstance(e, APIError):
+                    codes.append(e.code)
                 continue
         if not was_successful:
             raise RetriedLoginAndStillFailed(failure_type, codes)
