@@ -4,6 +4,7 @@ from river_mwclient.gamepedia_client import GamepediaClient
 from river_mwclient.errors import EsportsCacheKeyError
 from river_mwclient.wiki_time_parser import time_from_str
 
+
 credentials = AuthCredentials(user_file='me')
 
 site = EsportsClient('lol', credentials=credentials)
