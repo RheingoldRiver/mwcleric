@@ -37,3 +37,6 @@ assert site.cache.get_team_from_event_tricode('Ultraliga Season 5 Promotion', 'S
 # check a low-priority redirect player
 assert site.cache.get_disambiguated_player_from_event(
     'LCS 2020 Summer', 'FLY', 'Solo') == 'Solo (Colin Earnest)'
+
+# check escaping
+assert site.cache.get_team_from_event_tricode('PG Nationals/2021 Season/Spring Season', 'GGE') == 'gg&esports'

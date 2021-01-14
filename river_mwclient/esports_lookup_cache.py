@@ -109,14 +109,18 @@ class EsportsLookupCache(object):
         d = {}
         for item in result:
             team = item['Team']
-            link = self.get('Team', team, 'link', allow_fallback=True)
-            short = item['Short']
+            link = self.unescape(self.get('Team', team, 'link', allow_fallback=True))
+            short = self.unescape(item['Short'])
             if short == '':
                 short = self.get('Team', team, 'short')
             if short is not None and short != '':
                 d[short.lower()] = link
         self.event_tricode_cache[event] = d
-    
+
+    @staticmethod
+    def unescape(string):
+        return string.replace('&amp;', '&')
+
     def get_disambiguated_player_from_event(self, event, team, player):
         """
         Returns the disambiguated ID of the player based on the team they were playing on in the event.
