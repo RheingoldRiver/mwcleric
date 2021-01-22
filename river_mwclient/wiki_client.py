@@ -29,6 +29,20 @@ class WikiClient(object):
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
                  max_retries=3, retry_interval=10, **kwargs):
+        self.scheme = None
+        if 'http://' in url:
+            self.scheme = 'http'
+            url = url.replace('http://', '')
+        elif 'https://' in url:
+            self.scheme = 'https'
+            url = url.replace('https://', '')
+        # If user specifies scheme, we'll assume they want that with precedence
+        # even over specifying something in the url. Scheme is unlikely enough to be specified
+        # that it's not worth making an explicit parameter, especially since we support specifying
+        # it via the url.
+        if 'scheme' in kwargs:
+            self.scheme = kwargs.pop('scheme')
+
         self.url = url
         self.errors = []
         self._namespaces = None
@@ -41,7 +55,8 @@ class WikiClient(object):
             self.client = client
             return
 
-        self.client = session_manager.get_client(url=url, path=path, credentials=credentials, **kwargs)
+        self.client = session_manager.get_client(url=url, path=path, scheme=self.scheme,
+                                                 credentials=credentials, **kwargs)
 
     def login(self):
         if self.credentials is None:
