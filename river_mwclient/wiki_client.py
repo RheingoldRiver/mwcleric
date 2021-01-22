@@ -217,6 +217,9 @@ class WikiClient(object):
         text = kwargs.pop('text')
         page.edit(text, **kwargs)
 
+    def touch_title(self, title: str):
+        self.touch(self.client.pages[title])
+
     def touch(self, page: Page):
         try:
             page.site = self.client
