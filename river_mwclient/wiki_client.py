@@ -232,6 +232,9 @@ class WikiClient(object):
         page = self.client.pages[old_page.name]
         page.touch()
 
+    def purge_title(self, title: str):
+        self.purge(self.client.pages[title])
+
     def purge(self, page: Page):
         try:
             page.site = self.client
