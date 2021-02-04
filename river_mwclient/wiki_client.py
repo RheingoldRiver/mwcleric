@@ -232,6 +232,18 @@ class WikiClient(object):
         page = self.client.pages[old_page.name]
         page.touch()
 
+    def purge(self, page: Page):
+        try:
+            page.site = self.client
+            page.purge()
+        except self.write_errors:
+            self._retry_login_action(self._retry_purge, 'purge', page=page)
+
+    def _retry_purge(self, **kwargs):
+        old_page = kwargs['page']
+        page = self.client.pages[old_page.name]
+        page.purge()
+
     def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
              move_subpages=False, ignore_warnings=False):
         try:
