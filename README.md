@@ -3,6 +3,12 @@ River's tools for writing Python scripts for Leaguepedia / other Gamepedia espor
 This library is basically an `mwclient` (https://github.com/mwclient/mwclient) wrapper, it has some built-in error handling for you, some Cargo support, and most importantly decreases the number of lines of code needed to create and log into a site object from like 3 to 1. It's intended for my wikis primarily but feel free to clone/use.
 
 # Install/upgrade:
+This library can be installed from PyPI:
+```
+pip install river_mwclient
+```
+
+However, for the most up-to-date version including minor changes for Leaguepedia-specific needs you may want to pull directly from the repo if I haven't updated on PyPI:
 ```
 pip install -U git+git://github.com/RheingoldRiver/river_mwclient
 ```
