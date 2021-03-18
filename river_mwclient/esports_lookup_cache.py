@@ -170,7 +170,7 @@ class EsportsLookupCache(object):
             tables="TournamentPlayers=TP,PlayerRedirects=PR1,PlayerRedirects=PR2,LowPriorityRedirects=LPR",
             join_on="TP.Player=PR1.AllName,PR1.OverviewPage=PR2.OverviewPage,PR2.AllName=LPR._pageName",
             where="TP.OverviewPage=\"{}\" AND LPR.IsLowPriority IS NULL".format(event),
-            fields="TP.Team=Team,PR2.AllName=DisambiguatedName,PR2.ID=ID",
+            fields="TP.Team=Team,PR2.AllName=DisambiguatedName,PR2.ID=ID,TP.Player=TournamentName,PR2.OverviewPage=CurrentName",
             limit='max'
         )
         d = {}
@@ -178,7 +178,10 @@ class EsportsLookupCache(object):
             if item['Team'] not in d:
                 d[item['Team']] = {}
             team_entry = d[item['Team']]
-            
+
+            if unidecode(item['CurrentName']) == unidecode(item['DisambiguatedName']):
+                item['DisambiguatedName'] = item['CurrentName']
+
             disambiguation = re.sub(r'^' + re.escape(item['ID']), '', item['DisambiguatedName'])
             key = unidecode(item['ID']).lower()
             if key not in team_entry or disambiguation != '':

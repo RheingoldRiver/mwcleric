@@ -14,8 +14,10 @@ site = EsportsClient('lol', credentials=credentials)
 site2 = WikiClient('https://wikisandbox.gamepedia.com')
 site3 = WikiClient('http://wikisandbox.gamepedia.com', scheme='https', credentials=credentials)
 
-for ns in site.namespaces:
-    print(ns.name)
+print(site.cache.get_disambiguated_player_from_event('Claro Stars League/2021 Season/Opening Season', 'Luxor Gaming', 'Zeldris'))
+
+# for ns in site.namespaces:
+#     print(ns.name)
 
 assert site.cache.get_disambiguated_player_from_event(
     'El_Nexo/2020_Season/Split_1_Playoffs', 'Movistar Riders Academy', 'Marky'

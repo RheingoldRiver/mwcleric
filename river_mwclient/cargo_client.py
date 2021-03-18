@@ -1,3 +1,5 @@
+from mwclient import InvalidResponse
+
 from river_mwclient.site import Site
 
 
@@ -7,11 +9,16 @@ class CargoClient(object):
     """
     client = None
     
-    def __init__(self, client: Site, **kwargs):
+    def __init__(self, client: Site, backup_client=None, **kwargs):
+        self.backup_client = backup_client
         self.client = client
-    
+
     def query(self, **kwargs):
-        response = self.client.api('cargoquery', **kwargs)
+        try:
+            response = self.client.api('cargoquery', **kwargs)
+        except InvalidResponse:
+            self.client = self.backup_client
+            response = self.client.api('cargoquery', **kwargs)
         ret = []
         for item in response['cargoquery']:
             ret.append(item['title'])
