@@ -5,7 +5,7 @@ This library is basically an `mwclient` (https://github.com/mwclient/mwclient) w
 # Install/upgrade:
 This library can be installed from PyPI:
 ```
-pip install river_mwclient
+pip install river-mwclient
 ```
 
 However, for the most up-to-date version including minor changes for Leaguepedia-specific needs you may want to pull directly from the repo if I haven't updated on PyPI:
