@@ -3,4 +3,5 @@
 !.gitignore
 !/river_mwclient/
 !README.md
+!pyproject.toml
 scratch.py
