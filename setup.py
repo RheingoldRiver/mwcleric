@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="river_mwclient",
-    version="0.3.2",
+    version="0.4.0",
     author="RheingoldRiver",
     author_email="river.esports@gmail.com",
     description="River's mwclient wrapper",
