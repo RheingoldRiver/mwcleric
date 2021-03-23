@@ -1,10 +1,11 @@
+import re
+
 from .auth_credentials import AuthCredentials
 from .cargo_client import CargoClient
-from .esports_lookup_cache import EsportsLookupCache
-from .site import Site
-from .wiki_client import WikiClient
 from .errors import CantFindMatchHistory
-import re
+from .esports_lookup_cache import EsportsLookupCache
+from .gamepedia_client import GamepediaClient
+from .site import Site
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'apexlegends', 'fifa', 'gears', 'nba2k', 'paladins', 'siege',
@@ -12,7 +13,7 @@ ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'default-loadout', 'commons', 'teamfighttactics', 'valorant']
 
 
-class EsportsClient(WikiClient):
+class EsportsClient(GamepediaClient):
     """
     Functions for connecting to and editing specifically to Gamepedia esports wikis.
 
@@ -22,7 +23,7 @@ class EsportsClient(WikiClient):
     cargo_client: CargoClient = None
     client: Site = None
     wiki: str = None
-    
+
     def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, stg: bool = False,
                  cache: EsportsLookupCache = None,
@@ -35,23 +36,19 @@ class EsportsClient(WikiClient):
         :param stg: if it's a staging wiki or not
         """
         self.wiki = self.get_wiki(wiki)
-        
-        suffix = 'io' if stg else 'com'
-        url = '{}.gamepedia.{}'.format(self.wiki, suffix)
-        
-        super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
-        self.cargo_client = CargoClient(self.client)
+
+        super().__init__(wiki, credentials=credentials, stg=stg, client=client, **kwargs)
         if cache:
             self.cache = cache
         else:
             self.cache = EsportsLookupCache(self.client, cargo_client=self.cargo_client)
-    
+
     @staticmethod
     def get_wiki(wiki):
         if wiki in ['lol', 'teamfighttactics'] or wiki not in ALL_ESPORTS_WIKIS:
             return wiki
         return wiki + '-esports'
-    
+
     def setup_tables(self, tables):
         if isinstance(tables, str):
             tables = [tables]
@@ -69,16 +66,16 @@ class EsportsClient(WikiClient):
         self.create_tables(tables)
         for table in tables:
             self.client.pages['Template:{}/CargoDec'.format(table)].touch()
-    
+
     def create_tables(self, tables):
         self.recreate_tables(tables, replacement=False)
-    
+
     def recreate_tables(self, tables, replacement=True):
         if isinstance(tables, str):
             tables = [tables]
         templates = ['{}/CargoDec'.format(_) for _ in tables]
         self.cargo_client.recreate(templates, replacement=replacement)
-    
+
     def get_one_data_page(self, event, i):
         """
         Find one data page for an event
@@ -89,7 +86,7 @@ class EsportsClient(WikiClient):
         if i == 1:
             return self.client.pages['Data:' + event]
         return self.client.pages['Data:{}/{}'.format(event, str(i))]
-    
+
     def data_pages(self, event):
         """
         Find all the data pages for an event.
@@ -103,7 +100,7 @@ class EsportsClient(WikiClient):
             yield data_page
             i += 1
             data_page = self.get_one_data_page(event, i)
-    
+
     def query_riot_mh(self, riot_mh):
         match = re.search(r'match-details/(.+?)(&tab=.*)?$', riot_mh)
         if match[1] is None:
@@ -118,7 +115,7 @@ class EsportsClient(WikiClient):
         if len(result) == 0:
             raise CantFindMatchHistory
         return result[0]
-    
+
     def query_qq_mh(self, qq_id):
         result = self.cargo_client.query(
             tables="MatchSchedule=MS, Tournaments=T",
