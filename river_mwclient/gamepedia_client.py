@@ -1,4 +1,5 @@
 from mwclient import InvalidResponse
+from requests import HTTPError
 
 from .auth_credentials import AuthCredentials
 from .cargo_client import CargoClient
@@ -36,8 +37,11 @@ class GamepediaClient(WikiClient):
 
         # this backup_client would only be used for people who did not get their client fixed
         # by the login above, so we do not need to supply credentials at this point in time
-        backup_client = session_manager.get_client(url=self.url.replace('gamepedia', 'fandom'), path='/',
-                                                   **kwargs)
+        try:
+            backup_client = session_manager.get_client(url=self.url.replace('gamepedia', 'fandom'), path='/',
+                                                       **kwargs)
+        except HTTPError:
+            backup_client = self.client
         self.cargo_client = CargoClient(self.client, backup_client=backup_client)
 
     def relog(self):
