@@ -1,11 +1,13 @@
+## MediaWiki Client Library for Editing and Revision In Code (MW CLERIC)
+
 River's tools for writing Python scripts for Leaguepedia / other Gamepedia esports wikis.
 
-This library is basically an `mwclient` (https://github.com/mwclient/mwclient) wrapper, it has some built-in error handling for you, some Cargo support, and most importantly decreases the number of lines of code needed to create and log into a site object from like 3 to 1. It's intended for my wikis primarily but feel free to clone/use.
+This library was originally known as `river_mwclient`, however I renamed it because it has grown beyond the scope of just being tools for myself into a full-fledged library with a lot of utilities that's useful for many people. Thanks to pcj for coming up with the exellent name.
 
 # Install/upgrade:
 This library can be installed from PyPI:
 ```
-pip install river-mwclient
+pip install mwcleric
 ```
 
 However, for the most up-to-date version including minor changes for Leaguepedia-specific needs you may want to pull directly from the repo if I haven't updated on PyPI:
