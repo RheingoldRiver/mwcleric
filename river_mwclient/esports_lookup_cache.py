@@ -30,14 +30,21 @@ class EsportsLookupCache(object):
         """
         if filename in self.cache:
             return self.cache[filename]
+        # this compartmentalization is in place for Module:Teamnames, whose halfway point is somewhere in the middle
+        # of the letter T because of `Team` so a-s not a-m
+        dict1 = self._get_one_encoded_json(filename, 'include_match=^[a-s].*')
+        dict2 = self._get_one_encoded_json(filename, 'exclude_match=^[a-s].*')
+        self.cache[filename] = {**dict1, **dict2}
+        return self.cache[filename]
+
+    def _get_one_encoded_json(self, filename, mask):
         result = self.site.api(
             'expandtemplates',
             prop='wikitext',
-            text='{{JsonEncode|%s}}' % filename
+            text='{{{{JsonEncode|{}|{}}}}}'.format(filename, mask)
         )
-        self.cache[filename] = json.loads(result['expandtemplates']['wikitext'])
-        return self.cache[filename]
-    
+        return json.loads(result['expandtemplates']['wikitext'])
+
     def get(self, filename, key, length, allow_fallback=False):
         """
         Returrns the length of the lookup of a key requested from the filename requested. Assumes the file has
