@@ -1,6 +1,6 @@
 from mwclient import InvalidResponse
 
-from river_mwclient.site import Site
+from mwcleric.site import Site
 
 
 class CargoClient(object):

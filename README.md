@@ -10,7 +10,7 @@ pip install river-mwclient
 
 However, for the most up-to-date version including minor changes for Leaguepedia-specific needs you may want to pull directly from the repo if I haven't updated on PyPI:
 ```
-pip install -U git+git://github.com/RheingoldRiver/river_mwclient
+pip install -U git+git://github.com/RheingoldRiver/mwcleric
 ```
 
 If you're using PyCharm, press alt+F12 to open the console and you can install directly to your venv or whatever it's using that way.
@@ -41,9 +41,9 @@ For people wanting to edit wikis, `PageModifier` and `TemplateModifier` are the 
 For `PageModifier`, you probably want *either* `updage_plaintext` *or* `update_wikitext`, not both.
 ## Copyable code 
 ```python
-from river_mwclient.esports_client import EsportsClient
-from river_mwclient.auth_credentials import AuthCredentials
-from river_mwclient.template_modifier import TemplateModifierBase
+from mwcleric.esports_client import EsportsClient
+from mwcleric.auth_credentials import AuthCredentials
+from mwcleric.template_modifier import TemplateModifierBase
 
 credentials = AuthCredentials(user_file="me")
 site = EsportsClient('lol', credentials=credentials)
@@ -60,9 +60,9 @@ TemplateModifier(site, 'TEMPLATEYOUCAREABOUT',
 ```
 
 ```python
-from river_mwclient.esports_client import EsportsClient
-from river_mwclient.auth_credentials import AuthCredentials
-from river_mwclient.page_modifier import PageModifierBase
+from mwcleric.esports_client import EsportsClient
+from mwcleric.auth_credentials import AuthCredentials
+from mwcleric.page_modifier import PageModifierBase
 
 credentials = AuthCredentials(user_file="me")
 site = EsportsClient('lol', credentials=credentials)

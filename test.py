@@ -1,9 +1,9 @@
-from river_mwclient.esports_client import EsportsClient
-from river_mwclient.auth_credentials import AuthCredentials
-from river_mwclient.gamepedia_client import GamepediaClient
-from river_mwclient.wiki_client import WikiClient
-from river_mwclient.errors import EsportsCacheKeyError
-from river_mwclient.wiki_time_parser import time_from_str
+from mwcleric.esports_client import EsportsClient
+from mwcleric.auth_credentials import AuthCredentials
+from mwcleric.gamepedia_client import GamepediaClient
+from mwcleric.wiki_client import WikiClient
+from mwcleric.errors import EsportsCacheKeyError
+from mwcleric.wiki_time_parser import time_from_str
 
 
 credentials = AuthCredentials(user_file='me')

@@ -30,8 +30,8 @@ class AuthCredentials(object):
                 self.password = open(pwd_file).read().strip()
                 self.username = open(usr_file).read().strip()
                 return
-            pwd_path = path.join(path.expanduser('~'), '.config', 'river_mwclient', pwd_file)
-            usr_path = path.join(path.expanduser('~'), '.config', 'river_mwclient', usr_file)
+            pwd_path = path.join(path.expanduser('~'), '.config', 'mwcleric', pwd_file)
+            usr_path = path.join(path.expanduser('~'), '.config', 'mwcleric', usr_file)
             if path.exists(pwd_path) and path.exists(usr_path):
                 self.password = open(pwd_path).read().strip()
                 self.username = open(usr_path).read().strip()

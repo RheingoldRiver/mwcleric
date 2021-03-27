@@ -1,4 +1,4 @@
-from river_mwclient.wiki_client import WikiClient
+from mwcleric.wiki_client import WikiClient
 
 
 class LogEntry(object):
