@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mwcleric",
-    version="0.1.0",
+    version="0.1.1",
     author="RheingoldRiver",
     author_email="river.esports@gmail.com",
     description="River's mwclient wrapper",

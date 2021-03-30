@@ -185,10 +185,8 @@ class EsportsLookupCache(object):
             if item['Team'] not in d:
                 d[item['Team']] = {}
             team_entry = d[item['Team']]
-
-            if unidecode(item['CurrentName']) == unidecode(item['DisambiguatedName']):
-                item['DisambiguatedName'] = item['CurrentName']
-
+            if unidecode(item['ID']) == unidecode(item['DisambiguatedName']):
+                item['DisambiguatedName'] = item['ID']
             disambiguation = re.sub(r'^' + re.escape(item['ID']), '', item['DisambiguatedName'])
             key = unidecode(item['ID']).lower()
             if key not in team_entry or disambiguation != '':

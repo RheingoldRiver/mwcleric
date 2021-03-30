@@ -17,6 +17,8 @@ site3 = WikiClient('http://wikisandbox.gamepedia.com', scheme='https', credentia
 # for ns in site.namespaces:
 #     print(ns.name)
 
+assert site.cache.get_disambiguated_player_from_event('European Masters/2021 Season/Spring Play-In', 'G2 Arctic', 'Koldo') == 'Koldo'
+
 assert site.cache.get_disambiguated_player_from_event(
     'Claro Stars League/2021 Season/Opening Season', 'Luxor Gaming', 'Zeldris') == 'Zeldris (Christian Ticlavilca)'
 
