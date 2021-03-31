@@ -4,7 +4,7 @@ from .auth_credentials import AuthCredentials
 from .cargo_client import CargoClient
 from .errors import CantFindMatchHistory
 from .esports_lookup_cache import EsportsLookupCache
-from .gamepedia_client import GamepediaClient
+from .fandom_client import FandomClient
 from .site import Site
 
 ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
@@ -13,7 +13,7 @@ ALL_ESPORTS_WIKIS = ['lol', 'halo', 'smite', 'vg', 'rl', 'pubg', 'fortnite',
                      'default-loadout', 'commons', 'teamfighttactics', 'valorant']
 
 
-class EsportsClient(GamepediaClient):
+class EsportsClient(FandomClient):
     """
     Functions for connecting to and editing specifically to Gamepedia esports wikis.
 
@@ -25,8 +25,9 @@ class EsportsClient(GamepediaClient):
     wiki: str = None
 
     def __init__(self, wiki: str, client: Site = None,
-                 credentials: AuthCredentials = None, stg: bool = False,
+                 credentials: AuthCredentials = None,
                  cache: EsportsLookupCache = None,
+                 lang: str = None,
                  **kwargs):
         """
         Create a site object.
@@ -37,7 +38,7 @@ class EsportsClient(GamepediaClient):
         """
         self.wiki = self.get_wiki(wiki)
 
-        super().__init__(wiki, credentials=credentials, stg=stg, client=client, **kwargs)
+        super().__init__(wiki, credentials=credentials, lang=lang, client=client, **kwargs)
         if cache:
             self.cache = cache
         else:

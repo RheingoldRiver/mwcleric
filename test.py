@@ -1,6 +1,6 @@
 from mwcleric.esports_client import EsportsClient
 from mwcleric.auth_credentials import AuthCredentials
-from mwcleric.gamepedia_client import GamepediaClient
+from mwcleric.fandom_client import FandomClient
 from mwcleric.wiki_client import WikiClient
 from mwcleric.errors import EsportsCacheKeyError
 from mwcleric.wiki_time_parser import time_from_str
@@ -11,8 +11,9 @@ credentials = AuthCredentials(user_file='me')
 site = EsportsClient('lol', credentials=credentials)
 
 # check schemes
-site2 = WikiClient('https://wikisandbox.gamepedia.com')
-site3 = WikiClient('http://wikisandbox.gamepedia.com', scheme='https', credentials=credentials)
+site2 = WikiClient('https://wikisandbox-ucp.fandom.com', credentials=credentials)
+site3 = WikiClient('http://wikisandbox-ucp.fandom.com', scheme='https', credentials=credentials)
+site4 = FandomClient('leagueoflegends', lang='de', credentials=credentials)
 
 # for ns in site.namespaces:
 #     print(ns.name)

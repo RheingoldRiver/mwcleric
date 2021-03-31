@@ -1,14 +1,12 @@
 from mwclient import InvalidResponse
-from requests import HTTPError
 
 from .auth_credentials import AuthCredentials
 from .cargo_client import CargoClient
-from .session_manager import session_manager
 from .site import Site
 from .wiki_client import WikiClient
 
 
-class GamepediaClient(WikiClient):
+class FandomClient(WikiClient):
     """
     Functions for connecting to and editing specifically Gamepedia wikis.
     """
@@ -17,7 +15,7 @@ class GamepediaClient(WikiClient):
     wiki: str = None
 
     def __init__(self, wiki: str, client: Site = None,
-                 credentials: AuthCredentials = None, stg: bool = False,
+                 credentials: AuthCredentials = None, lang: str = None,
                  **kwargs):
         """
         Create a site object.
@@ -27,22 +25,11 @@ class GamepediaClient(WikiClient):
         :param stg: if it's a staging wiki or not
         """
 
-        suffix = 'io' if stg else 'com'
-        url = '{}.gamepedia.{}'.format(wiki, suffix)
-        try:
-            super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
-        except InvalidResponse:
-            url = url.replace('gamepedia', 'fandom')
-            super().__init__(url=url, path='/', credentials=credentials, client=client, **kwargs)
+        url = '{}.fandom.com'.format(wiki)
+        self.lang = '/' + ('' if lang is None else lang + '/')
+        super().__init__(url=url, path=self.lang, credentials=credentials, client=client, **kwargs)
 
-        # this backup_client would only be used for people who did not get their client fixed
-        # by the login above, so we do not need to supply credentials at this point in time
-        try:
-            backup_client = session_manager.get_client(url=self.url.replace('gamepedia', 'fandom'), path='/',
-                                                       **kwargs)
-        except HTTPError:
-            backup_client = self.client
-        self.cargo_client = CargoClient(self.client, backup_client=backup_client)
+        self.cargo_client = CargoClient(self.client)
 
     def relog(self):
         super().relog()
