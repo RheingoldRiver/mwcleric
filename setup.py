@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mwcleric",
-    version="0.2.0",
+    version="0.3.0",
     author="RheingoldRiver",
     author_email="river.esports@gmail.com",
     description="River's mwclient wrapper",
@@ -14,5 +14,5 @@ setuptools.setup(
     url="https://github.com/RheingoldRiver/mwcleric",
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
-    install_requires=['mwparserfromhell', 'pytz', 'mwclient>=0.10.1', 'python-dateutil', 'Unidecode']
+    install_requires=['mwparserfromhell', 'pytz', 'mwclient>=0.10.1']
 )

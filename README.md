@@ -43,12 +43,12 @@ For people wanting to edit wikis, `PageModifier` and `TemplateModifier` are the 
 For `PageModifier`, you probably want *either* `updage_plaintext` *or* `update_wikitext`, not both.
 ## Copyable code 
 ```python
-from mwcleric.esports_client import EsportsClient
+from mwcleric.fandom_client import FandomClient
 from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.template_modifier import TemplateModifierBase
 
 credentials = AuthCredentials(user_file="me")
-site = EsportsClient('lol', credentials=credentials)
+site = FandomClient("lol", credentials=credentials)
 summary = 'Bot edit'
 
 
@@ -62,12 +62,12 @@ TemplateModifier(site, 'TEMPLATEYOUCAREABOUT',
 ```
 
 ```python
-from mwcleric.esports_client import EsportsClient
+from mwcleric.fandom_client import FandomClient
 from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.page_modifier import PageModifierBase
 
 credentials = AuthCredentials(user_file="me")
-site = EsportsClient('lol', credentials=credentials)
+site = FandomClient('lol', credentials=credentials)
 summary = 'Bot edit'
 
 
