@@ -1,5 +1,7 @@
 import datetime
 import time
+from typing import Optional, Union
+
 from mwclient.page import Page
 from mwclient.errors import AssertUserFailedError
 from mwclient.errors import APIError
@@ -92,14 +94,15 @@ class WikiClient(object):
         self._namespaces = ret
         return ret
 
-    def pages_using(self, template, **kwargs):
+    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None, generator=True):
         if ':' not in template:
             title = 'Template:' + template
         elif template.startswith(':'):
             title = template[1:]
         else:
             title = template
-        return self.client.pages[title].embeddedin(**kwargs)
+        return self.client.pages[title].embeddedin(namespace=namespace, filterredir=filterredir,
+                                                   limit=limit, generator=generator)
 
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled', **kwargs):

@@ -28,7 +28,7 @@ class PageModifierBase(object):
     
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
                  tags=None, skip_pages=None,
-                 quiet=False, lag=0):
+                 quiet=False, lag=0, **data):
         """Create a PageModifier object, which can perform operations to edit the plaintext
         or wikitext of a page.
 
@@ -40,6 +40,7 @@ class PageModifierBase(object):
         :param startat_page: skip to this page
         :param quiet: don't print any console output (set to True for cron processes)
         :param lag: sleep this many seconds before saving
+        :param data: Extra keywords to save to the class for use in the update_wikitext/update_plaintext methods
         """
         if title_list is not None:
             page_list = [site.client.pages[p] for p in title_list]
@@ -53,6 +54,7 @@ class PageModifierBase(object):
         self.lag = lag
         self.quiet = quiet
         self.tags = tags
+        self.data = data
     
     def _print(self, s):
         """Print iff the quiet flag is not set to True"""
