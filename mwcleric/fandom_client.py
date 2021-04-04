@@ -8,7 +8,7 @@ from .wiki_client import WikiClient
 
 class FandomClient(WikiClient):
     """
-    Functions for connecting to and editing specifically Gamepedia wikis.
+    Functions for connecting to and editing specifically Fandom wikis.
     """
     cargo_client: CargoClient = None
     client: Site = None
