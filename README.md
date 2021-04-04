@@ -2,7 +2,7 @@
 
 River's tools for writing Python scripts for Leaguepedia / other Gamepedia esports wikis.
 
-This library was originally known as `river_mwclient`, however I renamed it because it has grown beyond the scope of just being tools for myself into a full-fledged library with a lot of utilities that's useful for many people. Thanks to pcj for coming up with the exellent name.
+This library was originally known as `river_mwclient`, however I renamed it because it has grown beyond the scope of just being tools for myself into a full-fledged library with a lot of utilities that's useful for many people. Thanks to pcj for coming up with the excellent name.
 
 # Install/upgrade:
 This library can be installed from PyPI:
@@ -15,11 +15,11 @@ However, for the most up-to-date version including minor changes for Leaguepedia
 pip install -U git+git://github.com/RheingoldRiver/mwcleric
 ```
 
-If you're using PyCharm, press alt+F12 to open the console and you can install directly to your venv or whatever it's using that way.
+If you're using PyCharm, press Alt+F12 to open the console and you can install directly to your venv or whatever it's using that way.
 
 # Logging in
 
-The function `login` should be your single point of entry to create an `EsportsSite` object. This function expects the following files in **the same directory as your code**:
+The function `login` expects the following files in **the same directory as your code**:
 * `username_me.txt` - your user name (for the login `me`) for example, `RheingoldRiver@Python`
 * `password_me.txt` - your bot password (for the login `me`) this will be a long string of characters from Special:BotPasswords
 * `username_bot.txt` - your bot's user name (for the login `bot`) for example, `RiverIsABot@Python`
@@ -31,7 +31,7 @@ These files would allow you to log in as `me` or as `bot`. Remember the username
 
 If you prefer, you can set environment variables called `WIKI_USERNAME_ME`, `WIKI_PASSWORD_ME`, etc. 
 
-If you don't want to log in, you can just create an EsportsSite/GamepediaSite object and never log in.
+If you don't want to log in, you can just create a `WikiClient` object and never log in.
 
 ## Bot password best practices
 * Use a unique password just for your Python code that isn't also used for any other service
