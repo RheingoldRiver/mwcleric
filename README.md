@@ -35,7 +35,7 @@ If you don't want to log in, you can just create a `WikiClient` object and never
 
 ## Bot password best practices
 * Use a unique password just for your Python code that isn't also used for any other service
-* In fact you should do this for every separate application that you use a bot password in
+* In fact, you should do this for every separate application that you use a bot password in
 
 # Editing
 For people wanting to edit wikis, `PageModifier` and `TemplateModifier` are the two things most likely to make your life easier. To use them you subclass and then overwrite methods to modify the page or template as needed, then instantiate the subclass and run. 

@@ -1,3 +1,4 @@
+import json
 from os import path, getenv
 
 from .errors import InvalidUserFile
@@ -24,11 +25,13 @@ class AuthCredentials(object):
             self.username = username
             self.password = password
         elif user_file:
-            pwd_file = 'password_{}.txt'.format(user_file.lower())
-            usr_file = 'username_{}.txt'.format(user_file.lower())
-            if path.exists(pwd_file) and path.exists(usr_file):
-                self.password = open(pwd_file).read().strip()
-                self.username = open(usr_file).read().strip()
+            account_file = 'wiki_account_{}.json'.format(user_file.lower())
+            if path.exists(account_file):
+                user_info = self.read_user_info(account_file)
+                self.password = user_info['password']
+                self.username = user_info['username']
+                if user_info.get('api_high_limits'):
+
                 return
             pwd_path = path.join(path.expanduser('~'), '.config', 'mwcleric', pwd_file)
             usr_path = path.join(path.expanduser('~'), '.config', 'mwcleric', usr_file)
@@ -44,3 +47,21 @@ class AuthCredentials(object):
                 raise InvalidUserFile
             self.password = pwd
             self.username = usr
+
+    @staticmethod
+    def read_user_info(file):
+        with open(file) as f:
+            json_data = json.load(f)
+            return json_data
+
+    @staticmethod
+    def prompt_user_info():
+        print('We will prompt for 3 things: Username, bot pw name, bot token name. Whitespace will be stripped.')
+        username = input('What is your username?')
+        pw_name = input('What is your bot pw name?')
+        pw_token = input('What is your bot pw token?')
+        api_high_limits = input('Does this bot pw have api high limits? [Y/N] Press Enter if unsure or to make the software auto detect.')
+        username = username.strip()
+        password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
+        api_high_limits = api_high_limits.lower().strip()
+        return username, password, api_high_limits
