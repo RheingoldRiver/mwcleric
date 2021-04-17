@@ -25,7 +25,7 @@ If you don't want to log in, you can just create a `WikiClient` / `FandomClient`
 
 You can specify a username & password directly in the `AuthCredentials` constructor, or you can set the name of a `user_file`. This user_file will be used as a key to look up either environment variables or a file. If the file doesn't exist, you will be prompted to enter your information.
 
-'''TL;DR: you can do nothing and just be prompted to enter your information.'''
+**TL;DR: you can do nothing and just be prompted to enter your information.**
 
 ### Environment variables method
 
