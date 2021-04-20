@@ -1,6 +1,6 @@
 # MediaWiki Client Library for Editing and Revision In Code (MW CLERIC)
 
-River's tools for writing Python scripts for Leaguepedia / other Gamepedia esports wikis.
+River's tools for writing Python scripts for MediaWiki wikis, including the Fandom wiki farm.
 
 This library was originally known as `river_mwclient`, however I renamed it because it has grown beyond the scope of just being tools for myself into a full-fledged library with a lot of utilities that's useful for many people. Thanks to pcj for coming up with the excellent name.
 
@@ -10,7 +10,7 @@ This library can be installed from PyPI:
 pip install mwcleric
 ```
 
-However, for the most up-to-date version including minor changes for Leaguepedia-specific needs you may want to pull directly from the repo if I haven't updated on PyPI:
+However, for the most up-to-date version including minor changes you may want to pull directly from the repo if I haven't updated PyPI:
 ```
 pip install -U git+git://github.com/RheingoldRiver/mwcleric
 ```
@@ -52,7 +52,6 @@ If you want, you can also create a json manually in the same directory as your c
 {
     "username": "@",
     "password": "",
-    "api_high_limits": ""
 }
 ```
 Fill in the blanks with your info.
@@ -63,7 +62,7 @@ River wrote an entire blog post about this! See https://river.me/blog/bot-passwo
 ## Editing
 For people wanting to edit wikis, `PageModifier` and `TemplateModifier` are the two things most likely to make your life easier. To use them, you subclass and then overwrite methods to modify the page or template as needed, then instantiate the subclass and run. 
 
-For `PageModifier`, you probably want *either* `updage_plaintext` *or* `update_wikitext`, not both.
+For `PageModifier`, you probably want *either* `update_plaintext` *or* `update_wikitext`, not both.
 ### Copyable code 
 ```python
 from mwcleric.wiki_client import WikiClient
