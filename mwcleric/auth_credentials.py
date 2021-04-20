@@ -30,11 +30,9 @@ class AuthCredentials(object):
             # Environment Variables Method
             pw = os.getenv('WIKI_PASSWORD_{}'.format(user_file.upper()), None)
             usr = os.getenv('WIKI_USERNAME_{}'.format(user_file.upper()), None)
-            lmt = os.getenv('WIKI_APILIMIT_{}'.format(user_file.upper()), None)
             if pw and usr:
                 self.password = pw
                 self.username = usr
-                self.api_high_limits = lmt
                 return
 
             # Files / User Input Method
@@ -49,13 +47,6 @@ class AuthCredentials(object):
                 raise InvalidUserFile
             self.password = user_info['password']
             self.username = user_info['username']
-            if user_info.get('api_high_limits'):
-                if user_info['api_high_limits'].lower()[0] == 'y':
-                    self.api_high_limits = True
-                else:
-                    self.api_high_limits = False
-            else:
-                self.api_high_limits = None
 
     def get_user_data_from_file(self, user_file, base_path):
         account_file = os.path.join(base_path, self.file_pattern.format(user_file.lower()))
@@ -101,14 +92,9 @@ class AuthCredentials(object):
         username = input('What is your USERNAME (not bot password yet)?')
         pw_name = input('What is your bot pw NAME (not token yet)?')
         pw_token = input('What is your bot pw token/secret?')
-        api_high_limits = input(
-            'Does this bot pw have api high limits? [Y/N] Press Enter if unsure or to make the software auto detect.').strip()
-        username = username.strip()
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
-        api_high_limits = api_high_limits.lower().strip()
         account_data = {
             'username': username,
             'password': password,
-            'api_high_limits': api_high_limits
         }
         return account_data
