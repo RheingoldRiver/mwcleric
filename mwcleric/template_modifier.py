@@ -1,4 +1,7 @@
+import re
 from typing import Optional, Union
+
+from mwparserfromhell.nodes import Template
 
 from .errors import TemplateModifierNotImplemented
 from .page_modifier import PageModifierBase
@@ -32,6 +35,7 @@ class TemplateModifierBase(PageModifierBase):
         self.template_name = template
         self.current_template = None
         self.recursive = recursive
+        self.check_deletion_marks = False
         if not title_list:
             page_list = page_list if page_list else site.pages_using(template, namespace=namespace)
         super().__init__(site, page_list=page_list, title_list=title_list, limit=limit, summary=summary,
@@ -46,3 +50,30 @@ class TemplateModifierBase(PageModifierBase):
 
     def update_template(self, template):
         raise TemplateModifierNotImplemented()
+
+    def remove_from_page(self):
+        """
+        Marks the template to remove it completely from the page in a later layer of processing
+        """
+        # we are not using wikitext.remove(node) because we want to clean up newlines later
+        self.current_template: Template
+        params = []
+        for param in self.current_template.params:
+            params.append(param.name.strip())
+        for param in params:
+            self.current_template.remove(param)
+
+        self.current_template.name = '@@@DELETE@@@'
+        self.check_deletion_marks = True
+
+    def postprocess_plaintext(self, text):
+        if not self.check_deletion_marks:
+            return text
+
+        # case: middle of article
+        text = text.replace('\n{{@@@DELETE@@@}}\n', '\n')
+        # case: beginning of article
+        text = re.sub('^' + re.escape('{{@@@DELETE@@@}}\n'), '', text)
+        # case: middle of a line or whatever
+        text = text.replace('{{@@@DELETE@@@}}', '')
+        return text

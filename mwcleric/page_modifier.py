@@ -76,6 +76,14 @@ class PageModifierBase(object):
         """
         self.prioritize_wikitext = True
         return text
+
+    def postprocess_plaintext(self, text):
+        """This method may not be supported forever, do not use it!!!
+
+        It's only here because TemplateModifier requires it due to mwparserfromhell's node removal
+        not completely removing newlines when removing nodes.
+        """
+        return text
     
     def run(self):
         lmt = 0
@@ -97,6 +105,10 @@ class PageModifierBase(object):
             self.current_text = self.update_plaintext(self.current_text)
             self.update_wikitext(self.current_wikitext)
             newtext = str(self.current_wikitext)
+
+            # TODO: If mwparserfromhell has better support for removing nodes from wikitext,
+            # delete postprocess_plaintext method
+            newtext = self.postprocess_plaintext(newtext)
             if newtext != self.current_page.text() and not self.prioritize_plaintext:
                 self._print('Saving page %s...' % page.name)
                 sleep(self.lag)
