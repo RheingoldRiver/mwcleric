@@ -70,6 +70,8 @@ class TemplateModifierBase(PageModifierBase):
         if not self.check_deletion_marks:
             return text
 
+        # case: middle of article, with extra whitespace on each side
+        text = text.replace('\n\n{{@@@DELETE@@@}}\n\n', '\n\n')
         # case: middle of article
         text = text.replace('\n{{@@@DELETE@@@}}\n', '\n')
         # case: beginning of article
