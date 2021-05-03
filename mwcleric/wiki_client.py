@@ -128,12 +128,14 @@ class WikiClient(object):
         for title in titles:
             yield self.client.pages[title]
 
-    def target(self, name: str):
+    def target(self, name: str) -> Optional[str]:
         """
         Return the name of a page's redirect target
         :param name: Name of page
         :return: Name of page's redirect target
         """
+        if name is None or name == '':
+            return None
         return self.client.pages[name].resolve_redirect().name
 
     def logs_by_interval(self, minutes, offset=0,
