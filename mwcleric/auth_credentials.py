@@ -31,6 +31,7 @@ class AuthCredentials(object):
                 account_data = self.prompt_user_info()
                 self.save_account_data(account_data, user_file)
             else:
+                # Proceeding with existing login credentials.
                 pass
 
         if username and password:
