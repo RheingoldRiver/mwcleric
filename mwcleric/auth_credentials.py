@@ -10,7 +10,7 @@ class AuthCredentials(object):
     password = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
-    def __init__(self, username=None, password=None, user_file=None):
+    def __init__(self, username=None, password=None, user_file=None, start_over=False):
         """
         Stores username and password for future use with a WikiClient.
         Specify either user_file or both username and password.
@@ -23,6 +23,17 @@ class AuthCredentials(object):
         :param password: Password, this is the actual value of the password, not the "name" of a "bot password"
         :param user_file: Either a file or a system variable as a nicknamed account to look for
         """
+        if start_over:
+            if user_file is None:
+                raise ValueError('No user_file is defined.')
+            start_over_confirm = input('Are you sure you want to overwrite your previous credentials? [Y]es or [N]o ')
+            if start_over_confirm.lower()[0] == 'y':
+                account_data = self.prompt_user_info()
+                self.save_account_data(account_data, user_file)
+            else:
+                # Proceeding with existing login credentials.
+                pass
+
         if username and password:
             self.username = username
             self.password = password
@@ -94,7 +105,7 @@ class AuthCredentials(object):
         pw_token = input('What is your bot pw token/secret?')
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
-            'username': username,
+            'username': username.strip(),
             'password': password,
         }
         return account_data
