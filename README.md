@@ -50,7 +50,7 @@ If you want, you can also create a json manually in the same directory as your c
 ```json
 {
     "username": "@",
-    "password": "",
+    "password": ""
 }
 ```
 Fill in the blanks with your info.
