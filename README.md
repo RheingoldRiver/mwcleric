@@ -33,9 +33,8 @@ If you're editing via crontab or setting up a Discord bot etc, dealing with file
 
 * `WIKI_USERNAME_%s`
 * `WIKI_PASSWORD_%s`
-* `WIKI_APILIMIT_%s`
 
-The third one is optional, if you don't set it the software may occasionally make one extra api call to determine if you have api high limits or not. If you use bot passwords, the password should be formatted like `RheingoldRiver@Python`; your username then `@` then the name of your bot password. The password is just your bot password secret.
+If you use bot passwords, the password should be formatted like `RheingoldRiver@Python`; your username then `@` then the name of your bot password. The password is just your bot password secret.
 
 ### Files / interactive method
 The interactive method prompts you to enter your username in two parts, first the wiki username, then the bot password name; as well as the bot password secret, and then creates the user file json.
