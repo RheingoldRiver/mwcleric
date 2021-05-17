@@ -1,3 +1,5 @@
+from typing import Union
+
 from mwclient import InvalidResponse
 
 from .auth_credentials import AuthCredentials
@@ -43,3 +45,12 @@ class FandomClient(WikiClient):
         except InvalidResponse:
             self.url = self.url.replace('gamepedia', 'fandom')
             self.relog()
+
+    def search(self, title_list, search_term, limit: int = 500):
+        page_list = self.get_simple_pages(title_list, limit=limit)
+        for page in page_list:
+            if search_term in page.text:
+                print(page.name)
+
+    def search_namespace(self, namespace: int, search_term, limit: int = 500):
+        self.search(self.client.allpages(namespace=namespace, generator=False), search_term, limit=limit)

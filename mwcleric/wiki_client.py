@@ -1,6 +1,6 @@
 import datetime
 import time
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from mwclient.page import Page
 from mwclient.errors import AssertUserFailedError
@@ -9,6 +9,7 @@ from requests.exceptions import ReadTimeout
 
 from .auth_credentials import AuthCredentials
 from .session_manager import session_manager
+from .simple_page import SimplePage
 from .site import Site
 from .wiki_content_error import WikiContentError
 from .wiki_script_error import WikiScriptError
@@ -137,6 +138,51 @@ class WikiClient(object):
         if name is None or name == '':
             return None
         return self.client.pages[name].resolve_redirect().name
+
+    def get_simple_pages(self, title_list: List[str], limit: int) -> List[SimplePage]:
+        titles_paginated = []
+        i = 0
+        paginated_element = []
+        for title in title_list:
+            if i == limit:
+                titles_paginated.append(paginated_element)
+                paginated_element = []
+                i = 0
+            paginated_element.append(title)
+            i += 1
+        ret = []
+        titles_paginated.append(paginated_element)
+        for query in titles_paginated:
+            result = self.client.api('query', prop='revisions', titles='|'.join(query), rvprop='content', rvslots='main')
+            unsorted_pages = []
+            for pageid in result['query']['pages']:
+                row = result['query']['pages'][pageid]
+                name = row['title']
+                # Put empty string for the text if the page doesn't exist - it's not the job of this function to check existence
+                text = row['revisions'][0]['slots']['main']['*'] if row.get('revisions') else ''
+                unsorted_pages.append(SimplePage(name, text))
+
+            # de-alphabetize & sort according to our initial order
+            capitalization_corrected_query = []
+            for title in query:
+                capitalization_corrected_query.append(title[0].upper() + title[1:])
+                # We don't know if the : is actually separating a namespace or not. So we'll put both in our lookup for
+                # the purpose of re-ordering the response that the api gave us. This is a safe thing to do AS LONG AS
+                # both capitalizations didn't previously exist in the original query given to us by the user
+                # So along the way just double check that wasn't the case.
+
+                # This might be a bit of a hack but it works out pretty nicely; there's only two possible ways the title
+                # could be capitalized, and they end up consecutive in our list (again unless the user specifically
+                # specified both separately), so when we reorder later we're guaranteed to look up and find the entry,
+                # and have it be in the right order.
+                if ':' in title:
+                    p = title.index(':')
+                    ns_ucfirst_title = title[0].upper() + title[1:p+1] + title[p+1].upper() + title[p+2:]
+                    if not any([ns_ucfirst_title in q for q in titles_paginated]):
+                        capitalization_corrected_query.append(ns_ucfirst_title)
+            unsorted_pages.sort(key=lambda x: capitalization_corrected_query.index(x.name))
+            ret += unsorted_pages
+        return ret
 
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
