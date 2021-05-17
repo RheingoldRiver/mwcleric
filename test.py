@@ -11,15 +11,9 @@ site3 = FandomClient('leagueoflegends', lang='de', credentials=credentials)
 
 site = FandomClient('lol', credentials=credentials)
 
-backlinks = []
-for page in site.pages_using('PBH', namespace='Template'):
-    backlinks.append(page.name)
-assert 'Template:PBH' in backlinks
+assert 'Template:PBH' in site.pages_using('PBH', namespace='Template', generator=False)
 
-backlinks2 = []
-for page in site.pages_using('PBH', namespace=10):
-    backlinks2.append(page.name)
-assert 'Template:PBH' in backlinks2
+assert 'Template:PBH' in site.pages_using('PBH', namespace=10, generator=False)
 
 assert site.target('Main Page') == 'League of Legends Esports Wiki'
 
