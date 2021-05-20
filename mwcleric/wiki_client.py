@@ -1,22 +1,22 @@
 import datetime
 import time
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Dict
 
-from mwclient.page import Page
-from mwclient.errors import AssertUserFailedError
 from mwclient.errors import APIError
+from mwclient.errors import AssertUserFailedError
+from mwclient.page import Page
 from requests.exceptions import ReadTimeout
 
 from .auth_credentials import AuthCredentials
+from .errors import PatrolRevisionInvalid, InvalidNamespaceName
+from .errors import PatrolRevisionNotSpecified
+from .errors import RetriedLoginAndStillFailed
+from mwcleric.models.namespace import Namespace
 from .session_manager import session_manager
-from .simple_page import SimplePage
+from mwcleric.models.simple_page import SimplePage
 from .site import Site
 from .wiki_content_error import WikiContentError
 from .wiki_script_error import WikiScriptError
-from .namespace import Namespace
-from .errors import PatrolRevisionNotSpecified
-from .errors import RetriedLoginAndStillFailed
-from .errors import PatrolRevisionInvalid
 
 
 class WikiClient(object):
@@ -49,6 +49,7 @@ class WikiClient(object):
         self.url = url
         self.errors = []
         self._namespaces = None
+        self._ns_name_to_ns = None
         self.credentials = credentials
         self.path = path
         self.kwargs = kwargs
@@ -80,6 +81,18 @@ class WikiClient(object):
     def namespaces(self):
         if self._namespaces is not None:
             return self._namespaces
+        self._populate_namespaces()
+        return self._namespaces
+
+    @property
+    def ns_name_to_namespace(self) -> Dict[str, Namespace]:
+        if self._ns_name_to_ns is not None:
+            return self._ns_name_to_ns
+        self._populate_namespaces()
+        self._ns_name_to_ns: Dict[str, Namespace]
+        return self._ns_name_to_ns
+
+    def _populate_namespaces(self):
         result = self.client.api('query', meta='siteinfo', siprop="namespaces|namespacealiases")
         ns_aliases = {}
         for alias in result['query']['namespacealiases']:
@@ -87,15 +100,34 @@ class WikiClient(object):
             if alias_key not in ns_aliases:
                 ns_aliases[alias_key] = []
             ns_aliases[alias_key].append(alias['*'])
-        ret = []
+        ns_list = []
+        ns_map = {}
         for ns_str, ns_data in result['query']['namespaces'].items():
             ns = int(ns_str)
-            ret.append(Namespace(id_number=ns, name=ns_data['*'],
-                                 canonical_name=ns_data.get('canonical'), aliases=ns_aliases.get(ns_str)))
-        self._namespaces = ret
-        return ret
+            canonical = ns_data.get('canonical')
+            aliases = ns_aliases.get(ns_str)
+            ns_obj = Namespace(id_number=ns, name=ns_data['*'],
+                               canonical_name=canonical, aliases=aliases)
+            ns_list.append(ns_obj)
+            ns_map[ns_data['*']] = ns_obj
+            if canonical is not None:
+                ns_map[canonical] = ns_obj
+            if aliases is not None:
+                for alias in aliases:
+                    ns_map[alias] = ns_obj
+        self._namespaces = ns_list
+        self._ns_name_to_ns = ns_map
 
-    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None, generator=True):
+    def get_ns_number(self, ns: str):
+        ns_obj = self.ns_name_to_namespace.get(ns)
+        if ns_obj is None:
+            raise InvalidNamespaceName
+        return ns_obj.id
+
+    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None,
+                    generator=True):
+        if isinstance(namespace, str):
+            namespace = self.get_ns_number(namespace)
         if ':' not in template:
             title = 'Template:' + template
         elif template.startswith(':'):
@@ -153,7 +185,8 @@ class WikiClient(object):
         ret = []
         titles_paginated.append(paginated_element)
         for query in titles_paginated:
-            result = self.client.api('query', prop='revisions', titles='|'.join(query), rvprop='content', rvslots='main')
+            result = self.client.api('query', prop='revisions', titles='|'.join(query), rvprop='content',
+                                     rvslots='main')
             unsorted_pages = []
             for pageid in result['query']['pages']:
                 row = result['query']['pages'][pageid]
@@ -177,7 +210,7 @@ class WikiClient(object):
                 # and have it be in the right order.
                 if ':' in title:
                     p = title.index(':')
-                    ns_ucfirst_title = title[0].upper() + title[1:p+1] + title[p+1].upper() + title[p+2:]
+                    ns_ucfirst_title = title[0].upper() + title[1:p + 1] + title[p + 1].upper() + title[p + 2:]
                     if not any([ns_ucfirst_title in q for q in titles_paginated]):
                         capitalization_corrected_query.append(ns_ucfirst_title)
             unsorted_pages.sort(key=lambda x: capitalization_corrected_query.index(x.name))

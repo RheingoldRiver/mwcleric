@@ -14,6 +14,9 @@ site = FandomClient('lol', credentials=credentials)
 assert 'Template:PBH' in site.pages_using('PBH', namespace='Template', generator=False)
 
 assert 'Template:PBH' in site.pages_using('PBH', namespace=10, generator=False)
+assert 'Portal:Champions/List' in site.pages_using('PortalChampionList/Start', namespace='Portal', generator=False)
+assert 'Leaguepedia:Blocking Policy' in site.pages_using('CommunityNavbox', namespace='Project', generator=False)
+assert 'Leaguepedia:Blocking Policy' in site.pages_using('CommunityNavbox', namespace='Leaguepedia', generator=False)
 
 assert site.target('Main Page') == 'League of Legends Esports Wiki'
 

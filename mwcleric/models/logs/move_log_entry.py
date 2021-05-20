@@ -1,4 +1,4 @@
-from mwcleric.logs.log_entry import LogEntry
+from mwcleric.models.logs.log_entry import LogEntry
 from mwcleric.wiki_client import WikiClient
 
 

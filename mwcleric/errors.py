@@ -29,3 +29,7 @@ class RetriedLoginAndStillFailed(AssertUserFailedError):
     def __str__(self):
         return "Tried to re-login but still failed. Attempted action: {}, codes: {}".format(
             self.action, ', '.join(self.codes))
+
+
+class InvalidNamespaceName(KeyError):
+    pass
