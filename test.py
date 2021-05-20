@@ -10,6 +10,7 @@ site2 = WikiClient('http://wikisandbox-ucp.fandom.com', scheme='https', credenti
 site3 = FandomClient('leagueoflegends', lang='de', credentials=credentials)
 
 site = FandomClient('lol', credentials=credentials)
+cargo_site = FandomClient('help-esports')
 
 assert 'Template:PBH' in site.pages_using('PBH', namespace='Template', generator=False)
 
@@ -32,3 +33,11 @@ assert pages[6].text == ''
 assert pages[6].name == 'Lowercasepagethatdoesntexist'
 assert pages[9].name == 'Notanamespace:asd'
 assert pages[10].name == 'Notanamespace:Asd'
+
+assert len(cargo_site.cargo_client.query(tables='MwclericTest', fields='Counter')) == 550
+
+assert len(cargo_site.cargo_client.query(tables='MwclericTest', fields='Counter', limit=50)) == 50
+
+assert len(cargo_site.cargo_client.query(tables='MwclericTest', fields='Counter', where='Counter > 500')) == 50
+
+assert len(cargo_site.cargo_client.query(tables='MwclericTest', fields='Counter', group_by='_pageName')) == 1

@@ -1,24 +1,59 @@
-from mwclient import InvalidResponse
+from typing import Union, List, Optional
 
 from mwcleric.site import Site
 
 
 class CargoClient(object):
     """
-    Extends mwclient.Site with basic Cargo operations. No Gamepedia-specific functionality here.
+    Extends mwclient.Site with basic Cargo operations.
     """
     client = None
-    
+
     def __init__(self, client: Site, **kwargs):
         self.client = client
 
-    def query(self, **kwargs):
-        response = self.client.api('cargoquery', **kwargs)
+    def query(self, *, tables: Union[str, List[str]], fields: Union[str, List[str]],
+              where: Optional[str] = None, join_on: Optional[Union[str, List[str]]] = None,
+              group_by: Optional[str] = None, having: Optional[Union[str, List[str]]] = None,
+              order_by: Optional[str] = None, offset: Optional[int] = None, limit: Optional[int] = None,
+              auto_continue: bool = True):
+        # auto-continue & set limit to max unless the user specified a lower limit, or set auto-continue to False
+        if limit is not None:
+            auto_continue = False
+        if auto_continue:
+            limit = 'max'
+        data = {}
+        fields_to_concat = {
+            'tables': tables,
+            'fields': fields,
+            'join_on': join_on,
+            'having': having,
+        }
+        for field_name, field in fields_to_concat.items():
+            if isinstance(field, list):
+                data[field_name] = ', '.join(field)
+            elif field is not None:
+                data[field_name] = field
+        fields_to_add = {
+            'where': where,
+            'group_by': group_by,
+            'order_by': order_by,
+            'offset': offset,
+            'limit': limit,
+        }
+        for field_name, field in fields_to_add.items():
+            if field is not None:
+                data[field_name] = field
         ret = []
-        for item in response['cargoquery']:
-            ret.append(item['title'])
+        while True:
+            response = self.client.api('cargoquery', **data)
+            for item in response['cargoquery']:
+                ret.append(item['title'])
+            if not auto_continue or response['limits']['cargoquery'] > len(response['cargoquery']):
+                break
+            data['offset'] = len(ret)
         return ret
-        
+
     def query_one_result(self, fields, **kwargs):
         rows = self.query(fields=fields, **kwargs)
         field = fields.split('=')[1] if '=' in fields else fields
@@ -28,7 +63,7 @@ class CargoClient(object):
         if field not in row:
             return None
         return row[field]
-    
+
     def page_list(self, fields=None, limit="max", page_pattern="%s", **kwargs):
         if isinstance(fields, list):
             fields = ', '.join(fields)
@@ -47,10 +82,10 @@ class CargoClient(object):
                 continue
             pages.append(page)
             yield self.client.pages[page]
-    
+
     def create(self, templates):
         self.recreate(templates, replacement=False)
-    
+
     def recreate(self, templates, replacement=True):
         if isinstance(templates, str):
             templates = [templates]
