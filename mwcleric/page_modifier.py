@@ -25,7 +25,7 @@ class PageModifierBase(object):
     current_wikitext = None
     prioritize_plaintext = False
     prioritize_wikitext = False
-    
+
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
                  tags=None, skip_pages=None,
                  quiet=False, lag=0, **data):
@@ -55,20 +55,20 @@ class PageModifierBase(object):
         self.quiet = quiet
         self.tags = tags
         self.data = data
-    
+
     def _print(self, s):
         """Print iff the quiet flag is not set to True"""
         if self.quiet:
             return
         print(s)
-    
+
     def update_wikitext(self, wikitext):
         """This will be run iff update_wikitext isn't overridden in a subclass.
         
         Modify wikitext in place.
         """
         self.prioritize_plaintext = True
-    
+
     def update_plaintext(self, text):
         """This will be run iff update_plaintext isn't overridden in a subclass.
         
@@ -84,7 +84,7 @@ class PageModifierBase(object):
         not completely removing newlines when removing nodes.
         """
         return text
-    
+
     def run(self):
         lmt = 0
         for page in self.page_list:
