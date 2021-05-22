@@ -1,6 +1,6 @@
 from typing import Union, List, Optional
 
-from mwcleric.site import Site
+from mwcleric.clients.site import Site
 
 
 class CargoClient(object):

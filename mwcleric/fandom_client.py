@@ -3,8 +3,8 @@ from typing import Union, List
 from mwclient import InvalidResponse
 
 from .auth_credentials import AuthCredentials
-from .cargo_client import CargoClient
-from .site import Site
+from mwcleric.clients.cargo_client import CargoClient
+from mwcleric.clients.site import Site
 from .wiki_client import WikiClient
 
 

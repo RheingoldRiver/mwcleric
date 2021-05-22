@@ -13,8 +13,8 @@ from .auth_credentials import AuthCredentials
 from .errors import PatrolRevisionInvalid, InvalidNamespaceName
 from .errors import PatrolRevisionNotSpecified
 from .errors import RetriedLoginAndStillFailed
-from .session_manager import session_manager
-from .site import Site
+from mwcleric.clients.session_manager import session_manager
+from mwcleric.clients.site import Site
 
 
 class WikiClient(object):

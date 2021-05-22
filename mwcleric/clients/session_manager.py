@@ -1,5 +1,5 @@
-from .auth_credentials import AuthCredentials
-from .site import Site
+from mwcleric.auth_credentials import AuthCredentials
+from mwcleric.clients.site import Site
 
 
 class SessionManager(object):
