@@ -190,9 +190,9 @@ class WikiClient(object):
             for pageid in result['query']['pages']:
                 row = result['query']['pages'][pageid]
                 name = row['title']
-                # Put empty string for the text if the page doesn't exist - it's not the job of this function to check existence
                 text = row['revisions'][0]['slots']['main']['*'] if row.get('revisions') else ''
-                unsorted_pages.append(SimplePage(name, text))
+                exists = True if row.get('revisions') else False
+                unsorted_pages.append(SimplePage(name=name, text=text, exists=exists))
 
             # de-alphabetize & sort according to our initial order
             capitalization_corrected_query = []

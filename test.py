@@ -23,13 +23,16 @@ assert site.target('Main Page') == 'League of Legends Esports Wiki'
 
 titles = ['Faker', 'Bengi', 'Module:CargoUtil',
           'Main Page', 'Template:Infobox Player', 'Amazing',
-          'lowercasepagethatdoesntexist', 'Module:lowercasepagethatdoesntexist', 'Notanamespace:lowercasepagethatdoesntexist',
+          'lowercasepagethatdoesntexist', 'Module:lowercasepagethatdoesntexist',
+          'Notanamespace:lowercasepagethatdoesntexist',
           'Notanamespace:asd', 'Notanamespace:Asd']
 pages = site.get_simple_pages(titles, 3)
 assert len(pages) == len(titles)
 assert pages[0].name == 'Faker'
+assert pages[0].exists is True
 assert pages[2].name == 'Module:CargoUtil'
 assert pages[6].text == ''
+assert pages[6].exists is False
 assert pages[6].name == 'Lowercasepagethatdoesntexist'
 assert pages[9].name == 'Notanamespace:asd'
 assert pages[10].name == 'Notanamespace:Asd'
