@@ -7,16 +7,14 @@ from mwclient.errors import AssertUserFailedError
 from mwclient.page import Page
 from requests.exceptions import ReadTimeout
 
+from mwcleric.models.namespace import Namespace
+from mwcleric.models.simple_page import SimplePage
 from .auth_credentials import AuthCredentials
 from .errors import PatrolRevisionInvalid, InvalidNamespaceName
 from .errors import PatrolRevisionNotSpecified
 from .errors import RetriedLoginAndStillFailed
-from mwcleric.models.namespace import Namespace
 from .session_manager import session_manager
-from mwcleric.models.simple_page import SimplePage
 from .site import Site
-from .wiki_content_error import WikiContentError
-from .wiki_script_error import WikiScriptError
 
 
 class WikiClient(object):
@@ -47,14 +45,15 @@ class WikiClient(object):
             self.scheme = kwargs.pop('scheme')
 
         self.url = url
-        self.errors = []
-        self._namespaces = None
-        self._ns_name_to_ns = None
         self.credentials = credentials
         self.path = path
         self.kwargs = kwargs
         self.max_retries = max_retries
         self.retry_interval = retry_interval
+
+        self._namespaces = None
+        self._ns_name_to_ns = None
+
         if client:
             self.client = client
             return
@@ -232,23 +231,6 @@ class WikiClient(object):
                                **kwargs
                                )
         return logs['query']['logevents']
-
-    def log_error_script(self, title: str = None, error: Exception = None):
-        self.errors.append(WikiScriptError(title, error))
-
-    def log_error_content(self, title: str = None, text: str = None):
-        self.errors.append(WikiContentError(title, error=text))
-
-    def report_all_errors(self, error_title):
-        if not self.errors:
-            return
-        error_page = self.client.pages['Log:' + error_title]
-        errors = [_.format_for_print() for _ in self.errors]
-        error_text = '<br>\n'.join(errors)
-        error_page.append('\n' + error_text)
-
-        # reset the list so we can reuse later if needed
-        self.errors = []
 
     def patrol(self, revid=None, rcid=None, **kwargs):
         if revid is None and rcid is None:
