@@ -39,7 +39,7 @@ If you use bot passwords, the password should be formatted like `RheingoldRiver@
 ### Files / interactive method
 The interactive method prompts you to enter your username in two parts, first the wiki username, then the bot password name; as well as the bot password secret, and then creates the user configuration file.
 
-The user configuration file is located in the `~/.config/mwcleric` directory on Linux, and in the `%HOMEPATH%\.config\.mwcleric` directory on Windows. (`%HOMEPATH%` typically means `C:\Users\[YOUR USERNAME]`).
+The user configuration file is located in the `~/.config/mwcleric` directory on Linux, and in the `%HOMEPATH%\.config\mwcleric` directory on Windows. (`%HOMEPATH%` typically means `C:\Users\[YOUR USERNAME]`).
 
 The name of the file must be formatted as `wiki_account_[NAME].json`, where `[NAME]` is the variable string you will refer to in the code; for example, `wiki_account_bot.json` for the variable string `bot`.
 
@@ -85,7 +85,7 @@ TemplateModifier(site, 'TEMPLATEYOUCAREABOUT',
 
 ```
 Notes about the above example:
- - The value given to the `user_file` parameter in the constructor of `AuthCredentials` is the same as the user variable string in the names of JSON configuration files. So for the code above, the file would be named, or would have to be named, `user_account_me.json`.
+ - The value given to the `user_file` parameter in the constructor of `AuthCredentials` is the same as the user variable string in the names of JSON configuration files. So for the code above, the file would be named, or would have to be named, `wiki_account_me.json`.
  - You are advised to provide a more descriptive summary.
  - To instruct the program on how to change the template, you need to implement the `update_template` method of the `TemplateModifier` class, typically by calling various methods of the provided `template` object. [Refer to the MWPFH documentation for more information](https://mwparserfromhell.readthedocs.io/en/latest/api/mwparserfromhell.nodes.html#module-mwparserfromhell.nodes.template).
  - The template name in place of the `TEMPLATEYOUCAREABOUT` uses the same principles as the `{{}}` syntax in wikitext. `Notice` means `Template:Notice`, `:Notice` means the main namespace page `Notice`, `Module:Thing` means the `Module:` namespace page `Thing`.
