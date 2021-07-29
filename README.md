@@ -114,5 +114,12 @@ PageModifier(site,
              summary=summary).run()
 ```
 
+## Troubleshooting
+* Permissions errors
+    * Are you logged in? To the right account?
+    * Did you grant the bot password all of the necessary rights? (Double-check at Special:BotPasswords!)
+* Cargo errors
+    * Do you have a field name starting with an underscore? You need to alias this to a name without an underscore
+
 ## Contributing
 PRs are welcome! So far this repo is mostly Fandom-wiki-centric but it definitely doesn't have to stay that way; though contributions to `FandomClient` are also appreciated. Help with documentation & tests is also welcome!
