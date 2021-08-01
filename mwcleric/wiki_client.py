@@ -313,17 +313,14 @@ class WikiClient(object):
         page = self.client.pages[old_page.name]
         page.purge()
 
-    def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
-             move_subpages=False, ignore_warnings=False):
+    def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False):
         try:
             page.site = self.client
-            page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect,
-                      move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+            page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect)
         except APIError as e:
             if e.code == 'badtoken':
                 self._retry_login_action(self._retry_move, 'move', page=page, new_title=new_title,
-                                         reason=reason, move_talk=move_talk, no_redirect=no_redirect,
-                                         move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+                                         reason=reason, move_talk=move_talk, no_redirect=no_redirect)
             else:
                 raise e
 
