@@ -313,22 +313,31 @@ class WikiClient(object):
         page = self.client.pages[old_page.name]
         page.purge()
 
-    def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False):
+    def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
+             move_subpages=False, ignore_warnings=False):
+        old_title = page.name
+        move_talk = 1 if move_talk else None
+        move_subpages = 1 if move_subpages else None
+        no_redirect = 1 if no_redirect else None
+        ignore_warnings = 1 if ignore_warnings else None
+        move_token = self.client.get_token('move')
         try:
-            page.site = self.client
-            page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect)
+            self.client.api('move', from=old_title, to=new_title, reason=reason,
+                            movetalk=move_talk, movesubpages=move_subpages, noredirect=no_redirect,
+                            ignorewarnings=ignore_warnings, token=move_token)
         except APIError as e:
             if e.code == 'badtoken':
-                self._retry_login_action(self._retry_move, 'move', page=page, new_title=new_title,
-                                         reason=reason, move_talk=move_talk, no_redirect=no_redirect)
+                self._retry_login_action(self._retry_move, 'move', from=old_title, to=new_title,
+                                         reason=reason, movetalk=move_talk, movesubpages=move_subpages,
+                                         noredirect=no_redirect, ignorewarnings=ignore_warnings,
+                                         token=move_token)
             else:
                 raise e
 
     def _retry_move(self, **kwargs):
-        old_page: Page = kwargs.pop('page')
-        page = self.client.pages[old_page.name]
-        new_title = kwargs.pop('new_title')
-        page.move(new_title, **kwargs)
+        # token is mandatory
+        token = kwargs.pop('token')
+        self.client.api('move', token=token, **kwargs)
 
     def delete(self, page: Page, reason='', watch=False, unwatch=False, oldimage=False):
         try:
