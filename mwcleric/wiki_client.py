@@ -315,22 +315,21 @@ class WikiClient(object):
 
     def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
              move_subpages=False, ignore_warnings=False):
-        old_title = page.name
-        move_talk = 1 if move_talk else None
-        move_subpages = 1 if move_subpages else None
-        no_redirect = 1 if no_redirect else None
-        ignore_warnings = 1 if ignore_warnings else None
+        data = {
+            'from': page.name,
+            'to': new_title,
+            'reason': reason,
+            'movetalk': 1 if move_talk else None,
+            'movesubpages': 1 if move_subpages else None,
+            'noredirect': 1 if no_redirect else None,
+            'ignorewarnings': 1 if ignore_warnings else None,
+        }
         move_token = self.client.get_token('move')
         try:
-            self.client.api('move', from=old_title, to=new_title, reason=reason,
-                            movetalk=move_talk, movesubpages=move_subpages, noredirect=no_redirect,
-                            ignorewarnings=ignore_warnings, token=move_token)
+            self.client.api('move', **data, token=move_token)
         except APIError as e:
             if e.code == 'badtoken':
-                self._retry_login_action(self._retry_move, 'move', from=old_title, to=new_title,
-                                         reason=reason, movetalk=move_talk, movesubpages=move_subpages,
-                                         noredirect=no_redirect, ignorewarnings=ignore_warnings,
-                                         token=move_token)
+                self._retry_login_action(self._retry_move, 'move', **data, token=move_token)
             else:
                 raise e
 
