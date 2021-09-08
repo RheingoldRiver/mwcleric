@@ -1,12 +1,12 @@
-from .auth_credentials import AuthCredentials
-from .site import Site
+from mwcleric.auth_credentials import AuthCredentials
+from mwcleric.clients.site import Site
 
 
 class SessionManager(object):
     """Manages instances of WikiClient
     """
     existing_wikis = {}
-    
+
     def get_client(self, url: str = None, path: str = None, scheme=None,
                    credentials: AuthCredentials = None, force_new=False,
                    **kwargs):

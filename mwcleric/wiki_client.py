@@ -1,21 +1,20 @@
 import datetime
 import time
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict
 
-from mwclient.page import Page
-from mwclient.errors import AssertUserFailedError
 from mwclient.errors import APIError
+from mwclient.errors import AssertUserFailedError
+from mwclient.page import Page
 from requests.exceptions import ReadTimeout
 
+from mwcleric.models.namespace import Namespace
+from mwcleric.models.simple_page import SimplePage
 from .auth_credentials import AuthCredentials
-from .session_manager import session_manager
-from .site import Site
-from .wiki_content_error import WikiContentError
-from .wiki_script_error import WikiScriptError
-from .namespace import Namespace
+from .errors import PatrolRevisionInvalid, InvalidNamespaceName
 from .errors import PatrolRevisionNotSpecified
 from .errors import RetriedLoginAndStillFailed
-from .errors import PatrolRevisionInvalid
+from mwcleric.clients.session_manager import session_manager
+from mwcleric.clients.site import Site
 
 
 class WikiClient(object):
@@ -46,13 +45,15 @@ class WikiClient(object):
             self.scheme = kwargs.pop('scheme')
 
         self.url = url
-        self.errors = []
-        self._namespaces = None
         self.credentials = credentials
         self.path = path
         self.kwargs = kwargs
         self.max_retries = max_retries
         self.retry_interval = retry_interval
+
+        self._namespaces = None
+        self._ns_name_to_ns = None
+
         if client:
             self.client = client
             return
@@ -79,6 +80,18 @@ class WikiClient(object):
     def namespaces(self):
         if self._namespaces is not None:
             return self._namespaces
+        self._populate_namespaces()
+        return self._namespaces
+
+    @property
+    def ns_name_to_namespace(self) -> Dict[str, Namespace]:
+        if self._ns_name_to_ns is not None:
+            return self._ns_name_to_ns
+        self._populate_namespaces()
+        self._ns_name_to_ns: Dict[str, Namespace]
+        return self._ns_name_to_ns
+
+    def _populate_namespaces(self):
         result = self.client.api('query', meta='siteinfo', siprop="namespaces|namespacealiases")
         ns_aliases = {}
         for alias in result['query']['namespacealiases']:
@@ -86,15 +99,34 @@ class WikiClient(object):
             if alias_key not in ns_aliases:
                 ns_aliases[alias_key] = []
             ns_aliases[alias_key].append(alias['*'])
-        ret = []
+        ns_list = []
+        ns_map = {}
         for ns_str, ns_data in result['query']['namespaces'].items():
             ns = int(ns_str)
-            ret.append(Namespace(id_number=ns, name=ns_data['*'],
-                                 canonical_name=ns_data.get('canonical'), aliases=ns_aliases.get(ns_str)))
-        self._namespaces = ret
-        return ret
+            canonical = ns_data.get('canonical')
+            aliases = ns_aliases.get(ns_str)
+            ns_obj = Namespace(id_number=ns, name=ns_data['*'],
+                               canonical_name=canonical, aliases=aliases)
+            ns_list.append(ns_obj)
+            ns_map[ns_data['*']] = ns_obj
+            if canonical is not None:
+                ns_map[canonical] = ns_obj
+            if aliases is not None:
+                for alias in aliases:
+                    ns_map[alias] = ns_obj
+        self._namespaces = ns_list
+        self._ns_name_to_ns = ns_map
 
-    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None, generator=True):
+    def get_ns_number(self, ns: str):
+        ns_obj = self.ns_name_to_namespace.get(ns)
+        if ns_obj is None:
+            raise InvalidNamespaceName
+        return ns_obj.id
+
+    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None,
+                    generator=True):
+        if isinstance(namespace, str):
+            namespace = self.get_ns_number(namespace)
         if ':' not in template:
             title = 'Template:' + template
         elif template.startswith(':'):
@@ -138,6 +170,52 @@ class WikiClient(object):
             return None
         return self.client.pages[name].resolve_redirect().name
 
+    def get_simple_pages(self, title_list: List[str], limit: int) -> List[SimplePage]:
+        titles_paginated = []
+        i = 0
+        paginated_element = []
+        for title in title_list:
+            if i == limit:
+                titles_paginated.append(paginated_element)
+                paginated_element = []
+                i = 0
+            paginated_element.append(title)
+            i += 1
+        ret = []
+        titles_paginated.append(paginated_element)
+        for query in titles_paginated:
+            result = self.client.api('query', prop='revisions', titles='|'.join(query), rvprop='content',
+                                     rvslots='main')
+            unsorted_pages = []
+            for pageid in result['query']['pages']:
+                row = result['query']['pages'][pageid]
+                name = row['title']
+                text = row['revisions'][0]['slots']['main']['*'] if row.get('revisions') else ''
+                exists = True if row.get('revisions') else False
+                unsorted_pages.append(SimplePage(name=name, text=text, exists=exists))
+
+            # de-alphabetize & sort according to our initial order
+            capitalization_corrected_query = []
+            for title in query:
+                capitalization_corrected_query.append(title[0].upper() + title[1:])
+                # We don't know if the : is actually separating a namespace or not. So we'll put both in our lookup for
+                # the purpose of re-ordering the response that the api gave us. This is a safe thing to do AS LONG AS
+                # both capitalizations didn't previously exist in the original query given to us by the user
+                # So along the way just double check that wasn't the case.
+
+                # This might be a bit of a hack but it works out pretty nicely; there's only two possible ways the title
+                # could be capitalized, and they end up consecutive in our list (again unless the user specifically
+                # specified both separately), so when we reorder later we're guaranteed to look up and find the entry,
+                # and have it be in the right order.
+                if ':' in title:
+                    p = title.index(':')
+                    ns_ucfirst_title = title[0].upper() + title[1:p + 1] + title[p + 1].upper() + title[p + 2:]
+                    if not any([ns_ucfirst_title in q for q in titles_paginated]):
+                        capitalization_corrected_query.append(ns_ucfirst_title)
+            unsorted_pages.sort(key=lambda x: capitalization_corrected_query.index(x.name))
+            ret += unsorted_pages
+        return ret
+
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
@@ -153,23 +231,6 @@ class WikiClient(object):
                                **kwargs
                                )
         return logs['query']['logevents']
-
-    def log_error_script(self, title: str = None, error: Exception = None):
-        self.errors.append(WikiScriptError(title, error))
-
-    def log_error_content(self, title: str = None, text: str = None):
-        self.errors.append(WikiContentError(title, error=text))
-
-    def report_all_errors(self, error_title):
-        if not self.errors:
-            return
-        error_page = self.client.pages['Log:' + error_title]
-        errors = [_.format_for_print() for _ in self.errors]
-        error_text = '<br>\n'.join(errors)
-        error_page.append('\n' + error_text)
-
-        # reset the list so we can reuse later if needed
-        self.errors = []
 
     def patrol(self, revid=None, rcid=None, **kwargs):
         if revid is None and rcid is None:
@@ -254,23 +315,28 @@ class WikiClient(object):
 
     def move(self, page: Page, new_title, reason='', move_talk=True, no_redirect=False,
              move_subpages=False, ignore_warnings=False):
+        data = {
+            'from': page.name,
+            'to': new_title,
+            'reason': reason,
+            'movetalk': 1 if move_talk else None,
+            'movesubpages': 1 if move_subpages else None,
+            'noredirect': 1 if no_redirect else None,
+            'ignorewarnings': 1 if ignore_warnings else None,
+        }
+        move_token = self.client.get_token('move')
         try:
-            page.site = self.client
-            page.move(new_title, reason=reason, move_talk=move_talk, no_redirect=no_redirect,
-                      move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+            self.client.api('move', **data, token=move_token)
         except APIError as e:
             if e.code == 'badtoken':
-                self._retry_login_action(self._retry_move, 'move', page=page, new_title=new_title,
-                                         reason=reason, move_talk=move_talk, no_redirect=no_redirect,
-                                         move_subpages=move_subpages, ignore_warnings=ignore_warnings)
+                self._retry_login_action(self._retry_move, 'move', **data, token=move_token)
             else:
                 raise e
 
     def _retry_move(self, **kwargs):
-        old_page: Page = kwargs.pop('page')
-        page = self.client.pages[old_page.name]
-        new_title = kwargs.pop('new_title')
-        page.move(new_title, **kwargs)
+        # token is mandatory
+        token = kwargs.pop('token')
+        self.client.api('move', token=token, **kwargs)
 
     def delete(self, page: Page, reason='', watch=False, unwatch=False, oldimage=False):
         try:
