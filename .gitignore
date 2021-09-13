@@ -36,6 +36,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Docs
+docs/_build/
+
 # Environments
 .env
 .venv
