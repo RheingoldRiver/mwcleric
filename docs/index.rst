@@ -10,9 +10,7 @@ MediaWiki Client Library for Editing and Revision In Code is a collection of too
 
 The library can be installed from PyPI using pip:
 
-```
-pip install mwcleric
-```
+``pip install mwcleric``
 
 If you're using PyCharm, your code may be executing in a venv; press alt+F12 and use PyCharm's own terminal to install to that environment.
 

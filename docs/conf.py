@@ -13,7 +13,8 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+# from mwcleric import __version__
+__version__ = '0.6.5'
 
 # -- Project information -----------------------------------------------------
 
@@ -21,9 +22,14 @@ project = 'mwcleric'
 copyright = '2021, RheingoldRiver'
 author = 'RheingoldRiver'
 
-# The full version, including alpha/beta/rc tags
-release = '0.5.4'
-
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+version = ".".join(__version__.split(".", 2)[:2])
+# The full version, including alpha/beta/rc tags.
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,7 +46,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 # -- Options for HTML output -------------------------------------------------
 
