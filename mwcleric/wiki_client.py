@@ -1,20 +1,20 @@
 import datetime
 import time
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, Dict, Generator
 
 from mwclient.errors import APIError
 from mwclient.errors import AssertUserFailedError
 from mwclient.page import Page
 from requests.exceptions import ReadTimeout
 
+from mwcleric.clients.session_manager import session_manager
+from mwcleric.clients.site import Site
 from mwcleric.models.namespace import Namespace
 from mwcleric.models.simple_page import SimplePage
 from .auth_credentials import AuthCredentials
 from .errors import PatrolRevisionInvalid, InvalidNamespaceName
 from .errors import PatrolRevisionNotSpecified
 from .errors import RetriedLoginAndStillFailed
-from mwcleric.clients.session_manager import session_manager
-from mwcleric.clients.site import Site
 
 
 class WikiClient(object):
@@ -123,10 +123,39 @@ class WikiClient(object):
             raise InvalidNamespaceName
         return ns_obj.id
 
-    def pages_using(self, template, namespace: Optional[Union[int, str]] = None, filterredir='all', limit=None,
-                    generator=True):
+    def pages_using(self, template: Union[str, List[str]], namespace: Optional[Union[int, str]] = None,
+                    filterredir='all', limit=None, generator=True,
+                    unique=True) -> Union[List[Page], Generator[Page, None, None]]:
+        """
+        Returns the list of pages using the provided template or templates
+        :param template: A template or list of templates to operate on
+        :param namespace: Optional - the namespace to restrict the result set to
+        :param filterredir: Passed directly to the MediaWiki api - filter redirects in the result?
+        :param limit: Passed directly to the MediaWiki api - limit the number of results?
+        :param generator: Default True - return result as a generator? If False, result will be a list
+        :param unique: Default True, but only has an effect if `generator` is False. Remove duplicates from the list output?
+        :return: A list or generator of Page objects containing all the results of what transcludes the input(s)
+        """
         if isinstance(namespace, str):
             namespace = self.get_ns_number(namespace)
+        if isinstance(template, str):
+            return self._pages_using_single(template=template, namespace=namespace, filterredir=filterredir,
+                                            limit=limit, generator=generator)
+
+        if generator is False:
+            ret = []
+            for tl in template:
+                new_ret = self._pages_using_single(template=tl, namespace=namespace, filterredir=filterredir,
+                                                   limit=limit, generator=generator)
+                ret += new_ret
+            if unique:
+                return list(set(ret))
+            return ret
+
+        return self._pages_using_gen(template=template, namespace=namespace, filterredir=filterredir,
+                                     limit=limit)
+
+    def _pages_using_single(self, template: str, namespace: Optional[int], filterredir, limit, generator):
         if ':' not in template:
             title = 'Template:' + template
         elif template.startswith(':'):
@@ -135,6 +164,14 @@ class WikiClient(object):
             title = template
         return self.client.pages[title].embeddedin(namespace=namespace, filterredir=filterredir,
                                                    limit=limit, generator=generator)
+
+    def _pages_using_gen(self, template: List[str], namespace: Optional[int], filterredir,
+                         limit) -> Generator[Page, None, None]:
+        for tl in template:
+            next_ret = self._pages_using_single(template=tl, namespace=namespace, filterredir=filterredir,
+                                                limit=limit, generator=True)
+            for p in next_ret:
+                yield p
 
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled', **kwargs):
