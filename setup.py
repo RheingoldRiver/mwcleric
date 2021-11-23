@@ -1,8 +1,9 @@
 import setuptools
-from mwcleric import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+__version__ = "0.6.10"
 
 setuptools.setup(
     name="mwcleric",

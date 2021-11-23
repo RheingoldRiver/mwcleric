@@ -1,5 +1,4 @@
-# from mwcleric import __version__
-__version__ = '"0.6.7"'
+from setup import __version__
 
 # Configuration file for the Sphinx documentation builder.
 #
