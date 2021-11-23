@@ -49,3 +49,5 @@ env.bak/
 venv.bak/
 
 scratch.py
+
+docs/build/

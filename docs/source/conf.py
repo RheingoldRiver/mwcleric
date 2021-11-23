@@ -1,3 +1,6 @@
+# from mwcleric import __version__
+__version__ = '"0.6.7"'
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -10,11 +13,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-# from mwcleric import __version__
-__version__ = '0.6.5'
+import os
+import sys
+sys.path.insert(0, os.path.abspath('mwcleric'))
 
 # -- Project information -----------------------------------------------------
 
@@ -37,6 +38,7 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

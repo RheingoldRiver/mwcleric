@@ -71,11 +71,13 @@ class FandomClient(WikiClient):
         Searches a specified namespace for a search term.
 
         If you want to search the entire wiki, use search instead.
+
         :param search_term: The term to search
         :param namespace: The namespace within which to search for the term.
         :param limit: The pagination limit when querying for page texts. If you are logged out or not a systop, probably 50.
         :return:
         """
+
         if isinstance(namespace, str):
             namespace = self.get_ns_number(namespace)
         self.search(search_term, self.client.allpages(namespace=namespace, generator=False), limit=limit)
