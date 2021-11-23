@@ -3,9 +3,11 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+__version__ = "0.7.0"
+
 setuptools.setup(
     name="mwcleric",
-    version="0.6.6",
+    version=__version__,
     author="RheingoldRiver",
     author_email="river.esports@gmail.com",
     description="River's mwclient wrapper",

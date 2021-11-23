@@ -21,6 +21,7 @@ class FandomClient(WikiClient):
                  **kwargs):
         """
         Create a site object.
+
         :param wiki: Name of a wiki
         :param lang: Optional. If the wiki has a language path in the URL, provide it here.
         :param client: Otpional. If this is provided, SessionManager will not be used.
@@ -56,7 +57,7 @@ class FandomClient(WikiClient):
         :param search_term: The term to search
         :param title_list: A list of page titles.
         :param limit: The pagination limit when querying for page texts. If you are logged out or not a systop, probably 50.
-        :return:
+        :return: Nothing, will print a list of the results
         """
 
         # TODO: Add regex support
@@ -71,11 +72,13 @@ class FandomClient(WikiClient):
         Searches a specified namespace for a search term.
 
         If you want to search the entire wiki, use search instead.
+
         :param search_term: The term to search
         :param namespace: The namespace within which to search for the term.
         :param limit: The pagination limit when querying for page texts. If you are logged out or not a systop, probably 50.
-        :return:
+        :return: Nothing, will print a list of the results
         """
+
         if isinstance(namespace, str):
             namespace = self.get_ns_number(namespace)
         self.search(search_term, self.client.allpages(namespace=namespace, generator=False), limit=limit)

@@ -7,16 +7,19 @@ from .wiki_client import WikiClient
 class PageModifierBase(object):
     """
     Update pages on a wiki by using update_wikitext or update_plaintext.
-    
+
     Available attributes you can change:
+
     * self.current_text (do this in self.update_plaintext()
     * self.current_wikitext (do this in self.update_wikitext()
-    
+
     Available attributes you can use but not modify:
+
     * self.current_page, which is an mwclient Page, so you can access page.name, etc
     * self.site, a WikiClient object
-    
+
     Specify a summary on initialization along with either a page_list or a title_list.
+
     * page_list is a list of Page objects (for example maybe site.client.categories)
     * title_list is a list of strings which will be turned into Page objects
     """
