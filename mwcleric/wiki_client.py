@@ -128,6 +128,7 @@ class WikiClient(object):
                     unique=True) -> Union[List[Page], Generator[Page, None, None]]:
         """
         Returns the list of pages using the provided template or templates
+
         :param template: A template or list of templates to operate on
         :param namespace: Optional - the namespace to restrict the result set to
         :param filterredir: Passed directly to the MediaWiki api - filter redirects in the result?

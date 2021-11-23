@@ -21,6 +21,7 @@ class FandomClient(WikiClient):
                  **kwargs):
         """
         Create a site object.
+
         :param wiki: Name of a wiki
         :param lang: Optional. If the wiki has a language path in the URL, provide it here.
         :param client: Otpional. If this is provided, SessionManager will not be used.
