@@ -1,3 +1,5 @@
+datetime
 mwclient
+mwparserfromhell
 requests
 six
