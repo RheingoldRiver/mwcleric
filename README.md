@@ -2,6 +2,8 @@
 
 River's tools for writing Python scripts for MediaWiki wikis, including the Fandom wiki farm.
 
+For full docs, please see [readthedocs.io](https://mwcleric.readthedocs.io/en/latest/index.html).
+
 This library was originally known as `river_mwclient`, however I renamed it because it has grown beyond the scope of just being tools for myself into a full-fledged library with a lot of utilities that's useful for many people. Thanks to pcj for coming up with the excellent name.
 
 ## Install/upgrade:

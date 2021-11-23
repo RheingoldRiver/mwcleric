@@ -201,7 +201,7 @@ class WikiClient(object):
     def target(self, name: str) -> Optional[str]:
         """
         Return the name of a page's redirect target
-        
+
         :param name: Name of page
         :return: Name of page's redirect target
         """
