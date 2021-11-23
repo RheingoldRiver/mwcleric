@@ -14,7 +14,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('mwcleric'))
+sys.path.insert(0, os.path.abspath('../../mwcleric'))
 
 # -- Project information -----------------------------------------------------
 
