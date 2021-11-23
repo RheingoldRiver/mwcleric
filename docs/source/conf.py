@@ -1,4 +1,4 @@
-from setup import __version__
+# from .. import setup
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -12,9 +12,9 @@ from setup import __version__
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('mwcleric'))
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('mwcleric'))
 
 # -- Project information -----------------------------------------------------
 
@@ -27,9 +27,9 @@ author = 'RheingoldRiver'
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(__version__.split(".", 2)[:2])
-# The full version, including alpha/beta/rc tags.
-release = __version__
+# version = ".".join(setup.__version__.split(".", 2)[:2])
+# # The full version, including alpha/beta/rc tags.
+# release = setup.__version__
 
 # -- General configuration ---------------------------------------------------
 
