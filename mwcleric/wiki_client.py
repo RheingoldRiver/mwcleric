@@ -419,3 +419,45 @@ class WikiClient(object):
     def save_title(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
                   summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+
+    def append(self, page: Page, append_text, summary=u'', minor=False, bot=True, section=None,
+               **kwargs):
+        try:
+            page.site = self.client
+            page.append(append_text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+        except self.write_errors:
+            self._retry_login_action(self._retry_append, 'append', page=page, text=append_text, summary=summary,
+                                     minor=minor, bot=bot, section=section, **kwargs)
+
+    def _retry_append(self, **kwargs):
+        old_page: Page = kwargs.pop('page')
+        # recreate the page object so that we're using the new site object, post-relog
+        page = self.client.pages[old_page.name]
+        text = kwargs.pop('text')
+        page.append(text, **kwargs)
+
+    def prepend(self, page: Page, prepend_text, summary=u'', minor=False, bot=True, section=None,
+                **kwargs):
+        try:
+            page.site = self.client
+            page.prepend(prepend_text, summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+        except self.write_errors:
+            self._retry_login_action(self._retry_prepend, 'prepend', page=page, text=prepend_text, summary=summary,
+                                     minor=minor, bot=bot, section=section, **kwargs)
+
+    def _retry_prepend(self, **kwargs):
+        old_page: Page = kwargs.pop('page')
+        # recreate the page object so that we're using the new site object, post-relog
+        page = self.client.pages[old_page.name]
+        text = kwargs.pop('text')
+        page.prepend(text, **kwargs)
+
+    def append_title(self, title: str, append_text, summary=u'', minor=False, bot=True, section=None,
+                     **kwargs):
+        self.append(self.client.pages[title], append_text,
+                    summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+
+    def prepend_title(self, title: str, prepend_text, summary=u'', minor=False, bot=True, section=None,
+                      **kwargs):
+        self.prepend(self.client.pages[title], prepend_text,
+                     summary=summary, minor=minor, bot=bot, section=section, **kwargs)
