@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import time
 from typing import Optional, Union, List, Dict, Generator
 
@@ -461,3 +461,11 @@ class WikiClient(object):
                       **kwargs):
         self.prepend(self.client.pages[title], prepend_text,
                      summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+
+    def last_edited_interval(self, page: Union[Page, str]) -> timedelta:
+        if type(page) == str:
+            page = self.client.pages[page]
+        if page.last_rev_time is None:
+            # force last_rev_time to populate
+            _text = page.text()
+        return datetime.now() - datetime.fromtimestamp(time.mktime(page.last_rev_time))
