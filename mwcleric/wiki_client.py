@@ -176,8 +176,8 @@ class WikiClient(object):
 
     def recentchanges_by_interval(self, minutes, offset=0,
                                   prop='title|ids|tags|user|patrolled', **kwargs):
-        now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
-        then = now - datetime.timedelta(minutes=minutes)
+        now = datetime.utcnow() - timedelta(minutes=offset)
+        then = now - timedelta(minutes=minutes)
         result = self.client.recentchanges(
             start=now.isoformat(),
             end=then.isoformat(),
@@ -258,8 +258,8 @@ class WikiClient(object):
     def logs_by_interval(self, minutes, offset=0,
                          lelimit="max",
                          leprop='details|type|title|tags', **kwargs):
-        now = datetime.datetime.utcnow() - datetime.timedelta(minutes=offset)
-        then = now - datetime.timedelta(minutes=minutes)
+        now = datetime.utcnow() - timedelta(minutes=offset)
+        then = now - timedelta(minutes=minutes)
         logs = self.client.api('query', format='json',
                                list='logevents',
                                #  lestart=now.isoformat(),
