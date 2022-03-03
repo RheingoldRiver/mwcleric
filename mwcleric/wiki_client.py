@@ -29,7 +29,7 @@ class WikiClient(object):
     write_errors = (AssertUserFailedError, ReadTimeout, APIError)
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
-                 max_retries=3, retry_interval=10, **kwargs):
+                 max_retries=3, retry_interval=10, max_retries_mwc: int = 0, **kwargs):
         self.scheme = None
         if 'http://' in url:
             self.scheme = 'http'
@@ -57,8 +57,8 @@ class WikiClient(object):
         if client:
             self.client = client
             return
-
         self.client = session_manager.get_client(url=url, path=path, scheme=self.scheme,
+                                                 max_retries=max_retries_mwc,
                                                  credentials=credentials, **kwargs)
 
     def login(self):
