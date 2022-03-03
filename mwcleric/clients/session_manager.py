@@ -9,7 +9,7 @@ class SessionManager(object):
 
     def get_client(self, url: str = None, path: str = None, scheme=None,
                    credentials: AuthCredentials = None, force_new=False,
-                   max_retries: int = 0,
+                   max_retries: int = 10,
                    **kwargs):
         if url in self.existing_wikis and not force_new:
             return self.existing_wikis[url]['client']

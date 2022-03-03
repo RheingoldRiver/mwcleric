@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-__version__ = "0.8.4"
+__version__ = "0.8.5"
 
 setuptools.setup(
     name="mwcleric",
