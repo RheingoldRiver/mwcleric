@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import time
 from typing import Optional, Union, List, Dict, Generator
 
-from mwclient.errors import APIError
+from mwclient.errors import APIError, MaximumRetriesExceeded
 from mwclient.errors import AssertUserFailedError
 from mwclient.page import Page
 from requests.exceptions import ReadTimeout
@@ -26,7 +26,7 @@ class WikiClient(object):
     """
     url = None
     client = None
-    write_errors = (AssertUserFailedError, ReadTimeout, APIError)
+    write_errors = (AssertUserFailedError, ReadTimeout, APIError, MaximumRetriesExceeded)
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
                  max_retries=3, retry_interval=10, max_retries_mwc: int = 0, **kwargs):
