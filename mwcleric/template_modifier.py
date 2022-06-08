@@ -1,4 +1,5 @@
 import re
+from copy import deepcopy
 from typing import Optional, Union
 
 from mwparserfromhell.nodes import Template
@@ -36,6 +37,7 @@ class TemplateModifierBase(PageModifierBase):
         self.current_template = None
         self.recursive = recursive
         self.check_deletion_marks = False
+        self.invoke_namespace = None
         if not title_list:
             page_list = page_list if page_list else site.pages_using(template, namespace=namespace)
         super().__init__(site, page_list=page_list, title_list=title_list, limit=limit, summary=summary,
@@ -44,7 +46,17 @@ class TemplateModifierBase(PageModifierBase):
 
     def update_wikitext(self, wikitext):
         for template in wikitext.filter_templates(recursive=self.recursive):
-            if template.name.matches(self.template_name):
+            name = template.name
+            # handle Scribunto modules
+            # see https://github.com/earwig/mwparserfromhell/issues/287
+            if name.startswith('#invoke:'):
+                if self.invoke_namespace is None:
+                    self.invoke_namespace = self.site.ns_name_to_namespace.get('Module', False)
+                if self.invoke_namespace:
+                    name = deepcopy(name)
+                    # replace with localized namespace
+                    name.replace('#invoke:', self.invoke_namespace.name + ':')
+            if name.matches(self.template_name):
                 self.current_template = template
                 self.update_template(template)
 
