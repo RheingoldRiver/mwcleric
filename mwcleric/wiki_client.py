@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import time
+import calendar
 from typing import Optional, Union, List, Dict, Generator
 
 from mwclient.errors import APIError, MaximumRetriesExceeded
@@ -468,4 +469,4 @@ class WikiClient(object):
         if page.last_rev_time is None:
             # force last_rev_time to populate
             _text = page.text()
-        return datetime.now() - datetime.fromtimestamp(time.mktime(page.last_rev_time))
+        return datetime.now() - datetime.fromtimestamp(calendar.timegm(page.last_rev_time))
