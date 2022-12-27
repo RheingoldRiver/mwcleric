@@ -49,6 +49,7 @@ class WikiClient(object):
         self.path = path
         self.kwargs = kwargs
         self.max_retries = max_retries
+        self.max_retries_mwc = max_retries_mwc
         self.retry_interval = retry_interval
 
         self._namespaces = None
@@ -72,9 +73,9 @@ class WikiClient(object):
         :return:
         """
         # The session manager will log in for us too
-        self.client = session_manager.get_client(url=self.url, path=self.path,
-                                                 credentials=self.credentials, **self.kwargs,
-                                                 force_new=True)
+        self.client = session_manager.get_client(url=self.url, path=self.path, scheme=self.scheme,
+                                                 credentials=self.credentials, max_retries=self.max_retries_mwc,
+                                                 **self.kwargs, force_new=True)
 
     @property
     def namespaces(self):
@@ -461,6 +462,35 @@ class WikiClient(object):
                       **kwargs):
         self.prepend(self.client.pages[title], prepend_text,
                      summary=summary, minor=minor, bot=bot, section=section, **kwargs)
+
+    def upload(self, file: str = None, filename: str = None, description: str = None, ignore_warnings: bool = False,
+               url: str = None, filekey: str = None, comment: str = None, **kwargs):
+        """
+        Uploads a file from a local directory or a URL. Only one of file, filekey or url must be specified.
+        Retries in case the upload fails.
+
+        :param file: File object to upload
+        :param filename: Destination filename without including a prefix like File:
+        :param description: Wikitext description for the file
+        :param ignore_warnings: Whether to ignore warnings raised by the API
+        :param url: URL to fetch the file from, disabled in some wikis
+        :param filekey: Key that identifies a previous upload that was stashed temporarily
+        :param comment: Comment for the upload, will be used as the initial page text for new files if description is not provided.
+        :param kwargs: Extra arguments to be passed to mwclient
+        """
+        request_errors = ("mustbeloggedin", "permissiondenied", "fileexists-shared-forbidden", "chunk-too-small",
+                          "stashfailed", "verification-error", "windows-nonascii-filename", "copyuploaddisabled",
+                          "fileexists-no-change")
+        try:
+            self.client.upload(file=file, filename=filename, description=description, ignore=ignore_warnings,
+                               url=url, filekey=filekey, comment=comment, **kwargs)
+        except self.write_errors as e:
+            # If the returned error code is our fault then don't retry
+            if type(e) == APIError and e.code in request_errors:
+                raise e
+            self._retry_login_action(self.client.upload, 'upload', file=file, filename=filename,
+                                     description=description, ignore=ignore_warnings, url=url,
+                                     filekey=filekey, comment=comment, **kwargs)
 
     def last_edited_interval(self, page: Union[Page, str]) -> timedelta:
         if type(page) == str:
