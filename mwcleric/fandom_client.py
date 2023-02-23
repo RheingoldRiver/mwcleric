@@ -24,7 +24,7 @@ class FandomClient(WikiClient):
 
         :param wiki: Name of a wiki
         :param lang: Optional. If the wiki has a language path in the URL, provide it here.
-        :param client: Otpional. If this is provided, SessionManager will not be used.
+        :param client: Optional. If this is provided, SessionManager will not be used.
         :param credentials: Optional. Provide if you want a logged-in session.
         """
 
