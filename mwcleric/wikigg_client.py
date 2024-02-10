@@ -25,7 +25,7 @@ class WikiGGClient(WikiClient):
         """
 
         url = '{}.wiki.gg{}'.format(wiki, f"/{lang}" if lang is not None else '')
-        path = '/' if lang is not None else '/wiki/'
+        path = '/'
         super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
 
         self.cargo_client = CargoClient(self.client)

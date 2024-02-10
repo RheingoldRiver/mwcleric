@@ -8,11 +8,20 @@ f_credentials = AuthCredentials(user_file='fme')
 
 # check schemes
 site1 = WikiClient('https://terraria.wiki.gg', credentials=credentials)
+page1 = site1.client.pages['User:RheingoldRiver/mwcleric test']
 site2 = WikiClient('http://terraria.wiki.gg', scheme='https', credentials=credentials)
-site3 = WikiClient('https://terraria.wiki.gg', lang='pl', credentials=credentials)
+page2 = site2.client.pages['User:RheingoldRiver/mwcleric test']
+site3 = WikiClient('https://terraria.wiki.gg', credentials=credentials)
+page3 = site3.client.pages['User:RheingoldRiver/mwcleric test']
 site4 = FandomClient('leagueoflegends', lang='de', credentials=f_credentials)
+page4 = site4.client.pages['User:RheingoldRiver/mwcleric test']
 site5 = WikiGGClient('terraria', credentials=credentials)
+page5 = site5.client.pages['User:RheingoldRiver/mwcleric test']
+page5.save(int(page5.text() or 0) + 1)
 site6 = WikiGGClient('terraria', lang='pl', credentials=credentials)
+page6 = site6.client.pages['User:RheingoldRiver/mwcleric test']
+page6.save(int(page6.text() or 0) + 1)
+
 
 site = FandomClient('lol', credentials=f_credentials)
 cargo_site = FandomClient('help-esports')
