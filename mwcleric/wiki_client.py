@@ -3,6 +3,7 @@ import time
 import calendar
 from typing import Optional, Union, List, Dict, Generator
 
+from mwcleric.clients.cargo_client import CargoClient
 from mwclient.errors import APIError, MaximumRetriesExceeded
 from mwclient.errors import AssertUserFailedError
 from mwclient.page import Page
@@ -30,7 +31,7 @@ class WikiClient(object):
     write_errors = (AssertUserFailedError, ReadTimeout, APIError, MaximumRetriesExceeded)
 
     def __init__(self, url: str, path='/', credentials: AuthCredentials = None, client: Site = None,
-                 max_retries=3, retry_interval=10, max_retries_mwc: int = 0, **kwargs):
+                 max_retries=3, retry_interval=10, max_retries_mwc: int = 0, cargo: bool=False, **kwargs):
         self.scheme = None
         if 'http://' in url:
             self.scheme = 'http'
@@ -62,6 +63,9 @@ class WikiClient(object):
         self.client = session_manager.get_client(url=url, path=path, scheme=self.scheme,
                                                  max_retries=max_retries_mwc,
                                                  credentials=credentials, **kwargs)
+
+        if cargo is True:
+            self.cargo_client = CargoClient(self.client)
 
     def login(self):
         if self.credentials is None:

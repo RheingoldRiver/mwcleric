@@ -1,15 +1,20 @@
 from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.fandom_client import FandomClient
 from mwcleric.wiki_client import WikiClient
+from mwcleric.wikigg_client import WikiGGClient
 
 credentials = AuthCredentials(user_file='me')
+f_credentials = AuthCredentials(user_file='fme')
 
 # check schemes
-site1 = WikiClient('https://wikisandbox-ucp.fandom.com', credentials=credentials)
-site2 = WikiClient('http://wikisandbox-ucp.fandom.com', scheme='https', credentials=credentials)
-site3 = FandomClient('leagueoflegends', lang='de', credentials=credentials)
+site1 = WikiClient('https://terraria.wiki.gg', credentials=credentials)
+site2 = WikiClient('http://terraria.wiki.gg', scheme='https', credentials=credentials)
+site3 = WikiClient('https://terraria.wiki.gg', lang='pl', credentials=credentials)
+site4 = FandomClient('leagueoflegends', lang='de', credentials=f_credentials)
+site5 = WikiGGClient('terraria', credentials=credentials)
+site6 = WikiGGClient('terraria', lang='pl', credentials=credentials)
 
-site = FandomClient('lol', credentials=credentials)
+site = FandomClient('lol', credentials=f_credentials)
 cargo_site = FandomClient('help-esports')
 
 assert 'Template:PBH' in site.pages_using('PBH', namespace='Template', generator=False)
