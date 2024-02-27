@@ -1,7 +1,7 @@
 from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.fandom_client import FandomClient
 from mwcleric.wiki_client import WikiClient
-from mwcleric.wikigg_client import WikiGGClient
+from mwcleric.wikigg_client import WikiggClient
 
 credentials = AuthCredentials(user_file='me')
 f_credentials = AuthCredentials(user_file='fme')
@@ -15,10 +15,10 @@ site3 = WikiClient('https://terraria.wiki.gg', credentials=credentials)
 page3 = site3.client.pages['User:RheingoldRiver/mwcleric test']
 site4 = FandomClient('leagueoflegends', lang='de', credentials=f_credentials)
 page4 = site4.client.pages['User:RheingoldRiver/mwcleric test']
-site5 = WikiGGClient('terraria', credentials=credentials)
+site5 = WikiggClient('terraria', credentials=credentials)
 page5 = site5.client.pages['User:RheingoldRiver/mwcleric test']
 page5.save(int(page5.text() or 0) + 1)
-site6 = WikiGGClient('terraria', lang='pl', credentials=credentials)
+site6 = WikiggClient('terraria', lang='pl', credentials=credentials)
 page6 = site6.client.pages['User:RheingoldRiver/mwcleric test']
 page6.save(int(page6.text() or 0) + 1)
 

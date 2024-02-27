@@ -8,6 +8,8 @@ class AuthCredentials(object):
     file_pattern = 'wiki_account_{}.json'
     username = None
     password = None
+    site_user = None
+    site_pw = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
     def __init__(self, username=None, password=None, user_file=None, start_over=False):
@@ -58,6 +60,8 @@ class AuthCredentials(object):
                 raise InvalidUserFile
             self.password = user_info['password']
             self.username = user_info['username']
+            self.site_pw = user_info['site_pw']
+            self.site_user = user_info['site_user']
 
     def get_user_data_from_file(self, user_file, base_path):
         account_file = os.path.join(base_path, self.file_pattern.format(user_file.lower()))

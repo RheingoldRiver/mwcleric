@@ -4,7 +4,7 @@ from .auth_credentials import AuthCredentials
 from .wiki_client import WikiClient
 
 
-class WikiGGClient(WikiClient):
+class WikiggClient(WikiClient):
     """
     Functions for connecting to and editing specifically wiki.gg wikis.
     """
@@ -14,6 +14,7 @@ class WikiGGClient(WikiClient):
 
     def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, lang: str = None,
+                 use_site_pw: bool = False,
                  **kwargs):
         """
         Create a site object.
@@ -24,7 +25,11 @@ class WikiGGClient(WikiClient):
         :param credentials: Optional. Provide if you want a logged-in session.
         """
 
-        url = '{}.wiki.gg{}'.format(wiki, f"/{lang}" if lang is not None else '')
+        url = '{}{}{}{}.wiki.gg{}'.format(
+            credentials.site_user if use_site_pw else '',
+            ':' if use_site_pw else '',
+            credentials.site_pw if use_site_pw else '',
+            wiki, f"/{lang}" if lang is not None else '')
         path = '/'
         super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
 
