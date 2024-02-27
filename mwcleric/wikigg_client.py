@@ -25,10 +25,11 @@ class WikiggClient(WikiClient):
         :param credentials: Optional. Provide if you want a logged-in session.
         """
 
-        url = '{}{}{}{}.wiki.gg{}'.format(
+        url = '{}{}{}{}{}.wiki.gg{}'.format(
             credentials.site_user if use_site_pw else '',
             ':' if use_site_pw else '',
             credentials.site_pw if use_site_pw else '',
+            '@' if use_site_pw else '',
             wiki, f"/{lang}" if lang is not None else '')
         path = '/'
         super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
