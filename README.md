@@ -14,7 +14,7 @@ pip install mwcleric
 
 However, for the most up-to-date version including minor changes you may want to pull directly from the repo if I haven't updated PyPI:
 ```
-pip install -U git+git://github.com/RheingoldRiver/mwcleric
+pip install -U git+https://github.com/RheingoldRiver/mwcleric
 ```
 
 If you're using PyCharm, press Alt+F12 to open the console and you can install directly to your venv or whatever it's using that way.
