@@ -12,7 +12,7 @@ class AuthCredentials(object):
     site_pw = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
-    def __init__(self, username=None, password=None, user_file=None, start_over=False):
+    def __init__(self, username=None, password=None, user_file=None, start_over=False, use_site_pw=False):
         """
         Stores username and password for future use with a WikiClient.
         Specify either user_file or both username and password.
@@ -25,6 +25,9 @@ class AuthCredentials(object):
         :param password: Password, this is the actual value of the password, not the "name" of a "bot password"
         :param user_file: Either a file or a system variable as a nicknamed account to look for
         """
+
+        self.use_site_pw = use_site_pw
+
         if start_over:
             if user_file is None:
                 raise ValueError('No user_file is defined.')
@@ -43,9 +46,13 @@ class AuthCredentials(object):
             # Environment Variables Method
             pw = os.getenv('WIKI_PASSWORD_{}'.format(user_file.upper()), None)
             usr = os.getenv('WIKI_USERNAME_{}'.format(user_file.upper()), None)
+            site_pw = os.getenv('WIKI_SITE_PASSWORD_{}'.format(user_file.upper()), None)
+            site_usr = os.getenv('WIKI_SITE_USERNAME_{}'.format(user_file.upper()), None)
             if pw and usr:
                 self.password = pw
                 self.username = usr
+                self.site_pw = site_pw
+                self.site_user = site_usr
                 return
 
             # Files / User Input Method
@@ -100,16 +107,28 @@ class AuthCredentials(object):
                                self.file_pattern.format(user_file.lower())), 'w') as f:
             f.write(json.dumps(account_data, indent=4))
 
-    @staticmethod
-    def prompt_user_info():
+    def prompt_user_info(self):
+        extra_info_text = "\n\n We will also ask for the site username & site password (used to view the wiki, separate from your personal account info). If you need to start over at any time, press Ctrl+C."
         print(
-            'We will prompt for 3 separate things: Username, bot pw name, bot token name. Whitespace will be stripped.')
+            f'We will prompt for {5 if self.use_site_pw else 3} separate things: '
+            f'Username, bot pw name, bot token name. '
+            f'Whitespace will be stripped.{extra_info_text if self.use_site_pw else ""}')
         username = input('What is your USERNAME (not bot password yet)?')
         pw_name = input('What is your bot pw NAME (not token yet)?')
         pw_token = input('What is your bot pw token/secret?')
+        site_user = input('What is the username needed to view the wiki?')
+        site_pw = input('What is the password needed to view the wiki?')
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
             'username': username.strip(),
             'password': password,
+            'site_user': site_user.strip(),
+            'site_pw': site_pw.strip(),
         }
         return account_data
+
+    @property
+    def site_password_prefix(self):
+        if not self.use_site_pw:
+            return ''
+        return f'{self.site_user}:{self.site_pw}@'
