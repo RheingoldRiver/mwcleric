@@ -108,8 +108,9 @@ class AuthCredentials(object):
             f.write(json.dumps(account_data, indent=4))
 
     def prompt_user_info(self):
-        extra_info_text = (f"\n\n We will also ask for the credentials required to view the wiki (separate from your personal account info). "
-                           f"If such credentials don't exist or you need to start over at any time, press Ctrl+C.")
+        extra_info_text = (
+            f"\n\n We will also ask for the credentials required to view the wiki (separate from your personal account info). "
+            f"If such credentials don't exist or you need to start over at any time, press Ctrl+C.")
         print(
             f'For your user account, we will prompt for 3 separate things: '
             f'Username, bot pw name, bot token name. '
@@ -117,8 +118,8 @@ class AuthCredentials(object):
         username = input('What is your USERNAME (not bot password yet)?')
         pw_name = input('What is your bot pw NAME (not token yet)?')
         pw_token = input('What is your bot pw token/secret?')
-        site_user = input('What is the HTTP authentication username (credentials required to view the wiki)?')
-        site_pw = input('WWhat is the HTTP authentication password (credentials required to view the wiki)?')
+        site_user = input('What is the HTTP authentication USERNAME (credentials required to view the wiki)?')
+        site_pw = input('WWhat is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
             'username': username.strip(),
