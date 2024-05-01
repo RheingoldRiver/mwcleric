@@ -26,7 +26,7 @@ class WikiggClient(WikiClient):
         """
 
         url = '{}{}.wiki.gg{}'.format(
-            credentials.site_password_prefix,
+            credentials.site_password_prefix if credentials is not None else '',
             wiki, f"/{lang}" if lang is not None else '')
         path = '/'
         super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
