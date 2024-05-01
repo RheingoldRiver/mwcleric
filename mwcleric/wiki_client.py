@@ -383,6 +383,26 @@ class WikiClient(object):
         token = kwargs.pop('token')
         self.client.api('move', token=token, **kwargs)
 
+    def protect(self, page: Page, protections="edit=sysop|move=sysop", expiry="infinite", reason=None, **data):
+        data.update({
+            'title': page.name,
+            'protections': protections,
+            'expiry': expiry,
+            'reason': reason,
+        })
+        protect_token = self.client.get_token('csrf')
+        try:
+            self.client.api('protect', **data, token=protect_token)
+        except APIError as e:
+            if e.code == 'badtoken':
+                self._retry_login_action(self._retry_protect, 'move', **data, token=protect_token)
+            else:
+                raise e
+
+    def _retry_protect(self, **kwargs):
+        token = kwargs.pop('token')
+        self.client.api('protect', token=token, **kwargs)
+
     def delete(self, page: Page, reason='', watch=False, unwatch=False, oldimage=False):
         try:
             page.site = self.client
