@@ -1,3 +1,5 @@
+from requests import HTTPError
+
 from mwcleric.clients.cargo_client import CargoClient
 from mwcleric.clients.site import Site
 from .auth_credentials import AuthCredentials
@@ -25,11 +27,27 @@ class WikiggClient(WikiClient):
         :param credentials: Optional. Provide if you want a logged-in session.
         """
 
-        url = '{}{}.wiki.gg{}'.format(
-            credentials.site_password_prefix if credentials is not None else '',
-            wiki, f"/{lang}" if lang is not None else '')
         path = '/'
-        super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
+
+        # en-language wikis have no special path on wiki.gg
+        if lang == 'en':
+            lang = None
+        try:
+            # first assume the wiki is public
+            url = '{}.wiki.gg{}'.format(
+                wiki, f"/{lang}" if lang is not None else '')
+            super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
+        except HTTPError:
+            # else try to log into an onboarding wiki if possible
+            # on wiki.gg onboarding wikis are locked behind HTTP auth
+            if credentials is None:
+                raise HTTPError
+            if credentials.site_password_prefix == '':
+                raise HTTPError
+            url = '{}{}.wiki.gg{}'.format(
+                credentials.site_password_prefix,
+                wiki, f"/{lang}" if lang is not None else '')
+            super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
 
         self.cargo_client = CargoClient(self.client)
 

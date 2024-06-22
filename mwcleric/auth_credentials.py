@@ -12,7 +12,7 @@ class AuthCredentials(object):
     site_pw = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
-    def __init__(self, username=None, password=None, user_file=None, start_over=False, use_site_pw=False):
+    def __init__(self, username=None, password=None, user_file=None, start_over=False):
         """
         Stores username and password for future use with a WikiClient.
         Specify either user_file or both username and password.
@@ -25,8 +25,6 @@ class AuthCredentials(object):
         :param password: Password, this is the actual value of the password, not the "name" of a "bot password"
         :param user_file: Either a file or a system variable as a nicknamed account to look for
         """
-
-        self.use_site_pw = use_site_pw
 
         if start_over:
             if user_file is None:
@@ -107,23 +105,28 @@ class AuthCredentials(object):
                                self.file_pattern.format(user_file.lower())), 'w') as f:
             f.write(json.dumps(account_data, indent=4))
 
-    def prompt_user_info(self):
+    @staticmethod
+    def prompt_user_info():
         extra_info_text = (
             f"\n\n We will also ask for the credentials required to view the wiki (separate from your personal account info). "
             f"If such credentials don't exist or you need to start over at any time, press Ctrl+C.")
         print(
             f'For your user account, we will prompt for 3 separate things: '
             f'Username, bot pw name, bot token name. '
-            f'Whitespace will be stripped.{extra_info_text if self.use_site_pw else ""}')
+            f'Whitespace will be stripped.')
         username = input('What is your USERNAME (not bot password yet)?')
         pw_name = input('What is your bot pw NAME (not token yet)?')
         pw_token = input('What is your bot pw token/secret?')
-        site_user = input('What is the HTTP authentication USERNAME (credentials required to view the wiki)?')
-        site_pw = input('WWhat is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
+        should_prompt_next = input('Is this wiki locked behind a password? [Y]es or [N]o')
+        site_user = ''
+        site_pw = ''
+        if should_prompt_next[0].lower() == 'y':
+            site_user = input('What is the HTTP authentication USERNAME (credentials required to view the wiki)?')
+            site_pw = input('WWhat is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
             'username': username.strip(),
-            'password': password,
+            'password': password.strip(),
             'site_user': site_user.strip(),
             'site_pw': site_pw.strip(),
         }
@@ -131,6 +134,6 @@ class AuthCredentials(object):
 
     @property
     def site_password_prefix(self):
-        if not self.use_site_pw:
+        if self.site_pw == '':
             return ''
         return f'{self.site_user}:{self.site_pw}@'
