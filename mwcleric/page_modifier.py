@@ -1,5 +1,8 @@
+from mwclient.page import Page
 from mwparserfromhell import parse
 from time import sleep
+
+from mwparserfromhell.wikicode import Wikicode
 
 from .wiki_client import WikiClient
 
@@ -23,11 +26,11 @@ class PageModifierBase(object):
     * page_list is a list of Page objects (for example maybe site.client.categories)
     * title_list is a list of strings which will be turned into Page objects
     """
-    current_page = None
-    current_text = None
-    current_wikitext = None
-    prioritize_plaintext = False
-    prioritize_wikitext = False
+    current_page: Page = None
+    current_text: str = None
+    current_wikitext: Wikicode = None
+    prioritize_plaintext: bool = False
+    prioritize_wikitext: bool = False
 
     def __init__(self, site: WikiClient, page_list=None, title_list=None, limit=-1, summary=None, startat_page=None,
                  tags=None, skip_pages=None,
