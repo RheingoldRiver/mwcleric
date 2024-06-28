@@ -45,8 +45,7 @@ class PageModifierBase(object):
         :param lag: sleep this many seconds before saving
         :param data: Extra keywords to save to the class for use in the update_wikitext/update_plaintext methods
         """
-        if title_list is not None:
-            page_list = [site.client.pages[p] for p in title_list]
+        self.title_list = title_list
         self.summary = summary if summary else 'Bot Edit'
         self.site = site
         self.page_list = page_list
@@ -58,6 +57,7 @@ class PageModifierBase(object):
         self.quiet = quiet
         self.tags = tags
         self.data = data
+        self.lmt = 0
 
     def _print(self, s):
         """Print iff the quiet flag is not set to True"""
@@ -89,36 +89,46 @@ class PageModifierBase(object):
         return text
 
     def run(self):
-        lmt = 0
-        for page in self.page_list:
-            if lmt == self.limit:
-                break
-            if self.startat_page and page.name == self.startat_page:
-                self.passed_startat = True
-            if not self.passed_startat:
-                self._print("Skipping page %s, before startat" % page.name)
-                continue
-            if page.name in self.skip_pages:
-                self._print("Skipping page %s as requested" % page.name)
-                continue
-            lmt += 1
-            self.current_text = page.text()
-            self.current_page = page
-            self.current_wikitext = parse(self.current_text)
-            self.current_text = self.update_plaintext(self.current_text)
-            self.update_wikitext(self.current_wikitext)
-            newtext = str(self.current_wikitext)
+        if self.page_list is not None:
+            for page in self.page_list:
+                if not self.process_page(page):
+                    break
+        elif self.title_list is not None:
+            for title in self.title_list:
+                page = self.site.client.pages[title]
+                if not self.process_page(page):
+                    break
 
-            # TODO: If mwparserfromhell has better support for removing nodes from wikitext,
-            # delete postprocess_plaintext method
-            newtext = self.postprocess_plaintext(newtext)
-            if newtext != self.current_page.text() and not self.prioritize_plaintext:
-                self._print('Saving page %s...' % page.name)
-                sleep(self.lag)
-                self.site.save(page, newtext, summary=self.summary, tags=self.tags)
-            elif self.current_text != self.current_page.text():
-                self._print('Saving page %s...' % page.name)
-                sleep(self.lag)
-                self.site.save(page, self.current_text, summary=self.summary, tags=self.tags)
-            else:
-                self._print('Skipping page %s...' % page.name)
+    def process_page(self, page):
+        if self.lmt == self.limit:
+            return False
+        if self.startat_page and page.name == self.startat_page:
+            self.passed_startat = True
+        if not self.passed_startat:
+            self._print("Skipping page %s, before startat" % page.name)
+            return True
+        if page.name in self.skip_pages:
+            self._print("Skipping page %s as requested" % page.name)
+            return True
+        self.lmt += 1
+        self.current_text = page.text()
+        self.current_page = page
+        self.current_wikitext = parse(self.current_text)
+        self.current_text = self.update_plaintext(self.current_text)
+        self.update_wikitext(self.current_wikitext)
+        newtext = str(self.current_wikitext)
+
+        # TODO: If mwparserfromhell has better support for removing nodes from wikitext,
+        # delete postprocess_plaintext method
+        newtext = self.postprocess_plaintext(newtext)
+        if newtext != self.current_page.text() and not self.prioritize_plaintext:
+            self._print('Saving page %s...' % page.name)
+            sleep(self.lag)
+            self.site.save(page, newtext, summary=self.summary, tags=self.tags)
+        elif self.current_text != self.current_page.text():
+            self._print('Saving page %s...' % page.name)
+            sleep(self.lag)
+            self.site.save(page, self.current_text, summary=self.summary, tags=self.tags)
+        else:
+            self._print('Skipping page %s...' % page.name)
+        return True
