@@ -65,8 +65,8 @@ class AuthCredentials(object):
                 raise InvalidUserFile
             self.password = user_info['password']
             self.username = user_info['username']
-            self.site_pw = user_info['site_pw']
-            self.site_user = user_info['site_user']
+            self.site_pw = user_info.get('site_pw', '')
+            self.site_user = user_info.get('site_user', '')
 
     def get_user_data_from_file(self, user_file, base_path):
         account_file = os.path.join(base_path, self.file_pattern.format(user_file.lower()))
