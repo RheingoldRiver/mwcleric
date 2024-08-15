@@ -38,7 +38,7 @@ class TemplateModifierBase(PageModifierBase):
         self.recursive = recursive
         self.check_deletion_marks = False
         self.invoke_namespace = None
-        if not title_list:
+        if title_list is None:
             page_list = page_list if page_list else site.pages_using(template, namespace=namespace)
         super().__init__(site, page_list=page_list, title_list=title_list, limit=limit, summary=summary,
                          quiet=quiet, lag=lag, tags=tags, skip_pages=skip_pages,
