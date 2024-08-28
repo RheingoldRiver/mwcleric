@@ -57,6 +57,8 @@ class WikiClient(object):
         self._namespaces = None
         self._ns_name_to_ns = None
 
+        self._extensions = None
+
         if client:
             self.client = client
             return
@@ -524,3 +526,11 @@ class WikiClient(object):
             # force last_rev_time to populate
             _text = page.text()
         return datetime.now() - datetime.fromtimestamp(calendar.timegm(page.last_rev_time))
+
+    @property
+    def extensions(self):
+        if self._extensions is not None:
+            return self._extensions
+        result = self.client.get('query', meta='siteinfo', formatversion=2, siprop='extensions')
+        self._extensions = [_['name'] for _ in result['query']['extensions']]
+        return self._extensions

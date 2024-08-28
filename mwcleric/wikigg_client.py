@@ -13,6 +13,7 @@ class WikiggClient(WikiClient):
     cargo_client: CargoClient = None
     client: Site = None
     wiki: str = None
+    credentials: AuthCredentials
 
     def __init__(self, wiki: str, client: Site = None,
                  credentials: AuthCredentials = None, lang: str = None,
@@ -29,6 +30,7 @@ class WikiggClient(WikiClient):
 
         path = '/'
 
+        self.is_public = True
         # en-language wikis have no special path on wiki.gg
         if lang == 'en':
             lang = None
@@ -48,8 +50,10 @@ class WikiggClient(WikiClient):
                 credentials.site_password_prefix,
                 wiki, f"/{lang}" if lang is not None else '')
             super().__init__(url=url, path=path, credentials=credentials, client=client, **kwargs)
+            self.is_public = False
 
         self.cargo_client = CargoClient(self.client)
+        self.credentials = credentials
 
     def relog(self):
         super().relog()
