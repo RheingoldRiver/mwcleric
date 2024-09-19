@@ -68,6 +68,7 @@ class WikiClient(object):
 
         if cargo is True:
             self.cargo_client = CargoClient(self.client)
+        self._localization_cache = {}
 
     def login(self):
         if self.credentials is None:
@@ -534,3 +535,11 @@ class WikiClient(object):
         result = self.client.get('query', meta='siteinfo', formatversion=2, siprop='extensions')
         self._extensions = [_['name'] for _ in result['query']['extensions']]
         return self._extensions
+
+    def localize(self, s: str) -> Optional[str]:
+        if s in self._localization_cache:
+            return self._localization_cache[s]
+        res = self.client.get('query', meta='allmessages', ammessages=s)
+        if 'missing' in res['query']['allmessages'][0]:
+            return None
+        return res['query']['allmessages'][0]['*']
