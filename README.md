@@ -67,24 +67,23 @@ For `PageModifier`, you probably want *either* `update_plaintext` *or* `update_w
 ### Copyable code 
 Changing the syntax of a template in all pages that use it:
 ```python
-from mwcleric.wiki_client import WikiClient
+from mwcleric import WikiggClient
 from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.template_modifier import TemplateModifierBase
 from mwparserfromhell.nodes import Template
 
 credentials = AuthCredentials(user_file="me")
-site = WikiClient(site='lol.fandom.com', credentials=credentials)
+site = WikiggClient('gg', credentials=credentials)
 summary = 'Bot edit'
 
 
 class TemplateModifier(TemplateModifierBase):
-	def update_template(self, template: Template):
-		return
+    def update_template(self, template: Template):
+        return
 
 
-TemplateModifier(site, 'TEMPLATEYOUCAREABOUT',
+TemplateModifier(site, 'NAME_OF_TEMPLATE',
                  summary=summary).run()
-
 ```
 Notes about the above example:
  - The value given to the `user_file` parameter in the constructor of `AuthCredentials` is the same as the user variable string in the names of JSON configuration files. So for the code above, the file would be named, or would have to be named, `wiki_account_me.json`.
@@ -100,7 +99,7 @@ from mwcleric.auth_credentials import AuthCredentials
 from mwcleric.page_modifier import PageModifierBase
 
 credentials = AuthCredentials(user_file="me")
-site = WikiClient(site='lol.fandom.com', credentials=credentials)
+site = WikiggClient(site='gg', credentials=credentials)
 summary = 'Bot edit'
 
 
