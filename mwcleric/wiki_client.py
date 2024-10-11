@@ -536,10 +536,12 @@ class WikiClient(object):
         self._extensions = [_['name'] for _ in result['query']['extensions']]
         return self._extensions
 
-    def localize(self, s: str) -> Optional[str]:
+    def localize(self, s: str, uselang: Optional[str] = None) -> Optional[str]:
         if s in self._localization_cache:
             return self._localization_cache[s]
-        res = self.client.get('query', meta='allmessages', ammessages=s)
+        if uselang is None:
+            uselang = self.client.site['lang']
+        res = self.client.get('query', meta='allmessages', ammessages=s, uselang=uselang)
         if 'missing' in res['query']['allmessages'][0]:
             return None
         return res['query']['allmessages'][0]['*']
