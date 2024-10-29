@@ -10,6 +10,7 @@ class AuthCredentials(object):
     password = None
     site_user = None
     site_pw = None
+    user_agent = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
     def __init__(self, username=None, password=None, user_file=None, start_over=False):
@@ -46,11 +47,13 @@ class AuthCredentials(object):
             usr = os.getenv('WIKI_USERNAME_{}'.format(user_file.upper()), None)
             site_pw = os.getenv('WIKI_SITE_PASSWORD_{}'.format(user_file.upper()), None)
             site_usr = os.getenv('WIKI_SITE_USERNAME_{}'.format(user_file.upper()), None)
+            ua = os.getenv('WIKI_USER_AGENT_{}'.format(user_file.upper()), None)
             if pw and usr:
                 self.password = pw
                 self.username = usr
                 self.site_pw = site_pw
                 self.site_user = site_usr
+                self.user_agent = ua
                 return
 
             # Files / User Input Method
@@ -67,6 +70,7 @@ class AuthCredentials(object):
             self.username = user_info['username']
             self.site_pw = user_info.get('site_pw', '')
             self.site_user = user_info.get('site_user', '')
+            self.user_agent = user_info.get('user_agent', '')
 
     def get_user_data_from_file(self, user_file, base_path):
         account_file = os.path.join(base_path, self.file_pattern.format(user_file.lower()))
@@ -123,12 +127,14 @@ class AuthCredentials(object):
         if should_prompt_next[0].lower() == 'y':
             site_user = input('What is the HTTP authentication USERNAME (credentials required to view the wiki)?')
             site_pw = input('WWhat is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
+        user_agent = input("Custom user agent string. If you don't know what that means, skip this")
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
             'username': username.strip(),
             'password': password.strip(),
             'site_user': site_user.strip(),
             'site_pw': site_pw.strip(),
+            'user_agent': user_agent.strip(),
         }
         return account_data
 
