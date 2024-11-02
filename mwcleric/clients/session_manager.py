@@ -20,10 +20,18 @@ class SessionManager(object):
             url = f"{http_user}:{http_pw}@{url}"
         if url in self.existing_wikis and not force_new:
             return self.existing_wikis[url]['client']
+        if credentials and not user_agent:
+            user_agent = credentials.user_agent
+        client_kwargs = dict(
+            path=path,
+            max_retries=max_retries,
+            clients_useragent=user_agent,
+            **kwargs
+        )
         if scheme is not None:
-            client = Site(url, path=path, scheme=scheme, max_retries=max_retries, **kwargs)
+            client = Site(url, scheme=scheme, **client_kwargs)
         else:
-            client = Site(url, path=path, max_retries=max_retries, clients_useragent=user_agent, **kwargs)
+            client = Site(url, **client_kwargs)
         if credentials:
             client.login(username=credentials.username, password=credentials.password)
         self.existing_wikis[url] = {'client': client}
