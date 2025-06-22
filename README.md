@@ -21,7 +21,7 @@ If you're using PyCharm, press Alt+F12 to open the console and you can install d
 
 ## Logging in
 
-Currently, bot passwords are supported; legacy login without bot passwords should also work. If you want to add support for another type of login, I'm happy to merge a PR for it.
+Currently, bot passwords (known as "application passwords" on wiki.gg) are supported; legacy login without bot passwords should also work. If you want to add support for another type of login, I'm happy to merge a PR for it.
 
 If you don't want to log in, you can just create a `WikiClient` / `FandomClient` object and never log in; this is fine if you just want to make Cargo queries etc. However, if you want to edit your wiki, you probably will want to log in.
 
@@ -36,7 +36,8 @@ If you're editing via crontab or setting up a Discord bot etc, dealing with file
 * `WIKI_USERNAME_%s`
 * `WIKI_PASSWORD_%s`
 
-For multiple bots: replace the `_%s` with a unique identifier like `_BOT` or `_SELF`, but make sure both the `WIKI_USERNAME_%s` and `WIKI_PASSWORD_%s` use the same suffix!
+Replace the `_%s` with a unique identifier for your account like `_BOT` or `_SELF`, and make sure both the `WIKI_USERNAME_%s` and `WIKI_PASSWORD_%s` use the same suffix. Provide this suffix in your AuthCredentials object. Multiple accounts can be set in the same shell without interfering with each other as long as they use different suffixes.
+
 If you use bot passwords, the password should be formatted like `RheingoldRiver@Python`; your username then `@` then the name of your bot password. The password is just your bot password secret.
 
 ### Files / interactive method
