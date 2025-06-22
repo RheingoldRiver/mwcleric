@@ -36,6 +36,7 @@ If you're editing via crontab or setting up a Discord bot etc, dealing with file
 * `WIKI_USERNAME_%s`
 * `WIKI_PASSWORD_%s`
 
+For multiple bots: replace the `_%s` with a unique identifier like `_BOT` or `_SELF`, but make sure both the `WIKI_USERNAME_%s` and `WIKI_PASSWORD_%s` use the same suffix!
 If you use bot passwords, the password should be formatted like `RheingoldRiver@Python`; your username then `@` then the name of your bot password. The password is just your bot password secret.
 
 ### Files / interactive method
