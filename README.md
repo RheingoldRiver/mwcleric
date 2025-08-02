@@ -1,6 +1,6 @@
 # MediaWiki Client Library for Editing and Revision In Code (MW CLERIC)
 
-River's tools for writing Python scripts for MediaWiki wikis, including the Fandom wiki farm.
+River's tools for writing Python scripts for MediaWiki wikis.
 
 For full docs, please see [readthedocs.io](https://mwcleric.readthedocs.io/en/latest/index.html).
 
