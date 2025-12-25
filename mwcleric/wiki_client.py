@@ -441,10 +441,6 @@ class WikiClient(object):
         if not was_successful:
             raise RetriedLoginAndStillFailed(failure_type, codes)
 
-    def save_tile(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
-        self.save(self.client.pages[title], text,
-                  summary=summary, minor=minor, bot=bot, section=section, **kwargs)
-
     def save_title(self, title: str, text, summary=None, minor=False, bot=True, section=None, **kwargs):
         self.save(self.client.pages[title], text,
                   summary=summary, minor=minor, bot=bot, section=section, **kwargs)
