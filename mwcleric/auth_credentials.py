@@ -11,6 +11,8 @@ class AuthCredentials(object):
     site_user = None
     site_pw = None
     user_agent = None
+    cloudflare_token_id = None
+    cloudflare_token_secret = None
     config_path = os.path.join(os.path.expanduser('~'), '.config', 'mwcleric')
 
     def __init__(self, username=None, password=None, user_file=None, start_over=False):
@@ -48,12 +50,16 @@ class AuthCredentials(object):
             site_pw = os.getenv('WIKI_SITE_PASSWORD_{}'.format(user_file.upper()), None)
             site_usr = os.getenv('WIKI_SITE_USERNAME_{}'.format(user_file.upper()), None)
             ua = os.getenv('WIKI_USER_AGENT_{}'.format(user_file.upper()), None)
+            cloudflare_token_id = os.getenv('WIKI_CLOUDFLARE_TOKEN_ID_{}'.format(user_file.upper()), None)
+            cloudflare_token_secret = os.getenv('WIKI_CLOUDFLARE_TOKEN_SECRET_{}'.format(user_file.upper()), None)
             if pw and usr:
                 self.password = pw
                 self.username = usr
                 self.site_pw = site_pw
                 self.site_user = site_usr
                 self.user_agent = ua
+                self.cloudflare_token_id = cloudflare_token_id
+                self.cloudflare_token_secret = cloudflare_token_secret
                 return
 
             # Files / User Input Method
@@ -71,6 +77,8 @@ class AuthCredentials(object):
             self.site_pw = user_info.get('site_pw', '')
             self.site_user = user_info.get('site_user', '')
             self.user_agent = user_info.get('user_agent', '')
+            self.cloudflare_token_id = user_info.get('cloudflare_token_id', None)
+            self.cloudflare_token_secret = user_info.get('cloudflare_token_secret', None)
 
     def get_user_data_from_file(self, user_file, base_path):
         account_file = os.path.join(base_path, self.file_pattern.format(user_file.lower()))
@@ -126,7 +134,7 @@ class AuthCredentials(object):
         site_pw = ''
         if should_prompt_next[0].lower() == 'y':
             site_user = input('What is the HTTP authentication USERNAME (credentials required to view the wiki)?')
-            site_pw = input('WWhat is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
+            site_pw = input('What is the HTTP authentication PASSWORD (credentials required to view the wiki)?')
         user_agent = input("Custom user agent string. If you don't know what that means, skip this")
         password = '{}@{}'.format(pw_name.strip(), pw_token.strip())
         account_data = {
@@ -136,6 +144,15 @@ class AuthCredentials(object):
             'site_pw': site_pw.strip(),
             'user_agent': user_agent.strip(),
         }
+        should_prompt_next = input('Is this wiki locked behind Cloudflare Access? [Y]es or [N]o')
+        cloudflare_token_id = None
+        cloudflare_token_secret = None
+        if should_prompt_next[0].lower() == 'y':
+            cloudflare_token_id = input('What is the service token ID (Cf-Access-Client-Id)? ')
+            cloudflare_token_secret = input('What is the service token secret (Cf-Access-Client-Secret)? ')
+        if cloudflare_token_id and cloudflare_token_secret:
+            account_data['cloudflare_token_id'] = cloudflare_token_id
+            account_data['cloudflare_token_secret'] = cloudflare_token_secret
         return account_data
 
     @property
