@@ -18,10 +18,15 @@ class SessionManager(object):
                    **kwargs):
         if http_user is not None and http_pw is not None:
             url = f"{http_user}:{http_pw}@{url}"
-        if url in self.existing_wikis and not force_new:
-            return self.existing_wikis[url]['client']
         if credentials and not user_agent:
             user_agent = credentials.user_agent
+        process_cache_key = (
+            url,
+            credentials and credentials.username,
+            user_agent
+        )
+        if process_cache_key in self.existing_wikis and not force_new:
+            return self.existing_wikis[process_cache_key]['client']
         client_kwargs = dict(
             path=path,
             max_retries=max_retries,
@@ -34,7 +39,7 @@ class SessionManager(object):
             client = Site(url, **client_kwargs)
         if credentials:
             client.login(username=credentials.username, password=credentials.password)
-        self.existing_wikis[url] = {'client': client}
+        self.existing_wikis[process_cache_key] = {'client': client}
         return client
 
 
