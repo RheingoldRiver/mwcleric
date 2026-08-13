@@ -31,8 +31,15 @@ class SessionManager(object):
             path=path,
             max_retries=max_retries,
             clients_useragent=user_agent,
+            custom_headers=dict(),
             **kwargs
         )
+
+        # Bind the Cloudflare token if provided in the credentials
+        if credentials and credentials.cloudflare_token_id and credentials.cloudflare_token_secret:
+            client_kwargs['custom_headers']['CF-Access-Client-Id'] = credentials.cloudflare_token_id
+            client_kwargs['custom_headers']['CF-Access-Client-Secret'] = credentials.cloudflare_token_secret
+
         if scheme is not None:
             client = Site(url, scheme=scheme, **client_kwargs)
         else:
